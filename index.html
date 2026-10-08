@@ -4,87 +4,162 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FunCars — Mi mundo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --doman-red: #D32F2F;
-    --bg: #ffffff;
-    --fg: #111;
-    --muted: #8a8a8a;
+    --doman-red: #E53935;
+    --sky-1: #FFE98A;
+    --sky-2: #FFC46B;
+    --sky-3: #FF8A5B;
+    --road:   #3B3B4F;
+    --road-stripe: #FFE066;
+    --cream:  #FFF8EC;
+    --ink:    #1E1E2A;
+    --muted:  #6b6b7a;
+    --accent-blue: #4FC3F7;
+    --accent-green: #66BB6A;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; padding: 0;
     height: 100%;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-family: "Fredoka", -apple-system, system-ui, sans-serif;
+    color: var(--ink);
     overscroll-behavior: none;
     -webkit-user-select: none;
     user-select: none;
-    -webkit-tap-highlight-color: transparent;
   }
-  body { display: flex; align-items: center; justify-content: center; }
+  body {
+    background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
 
-  .screen { display: none; width: 100%; height: 100%; }
+  .screen { display: none; width: 100%; min-height: 100vh; }
   .screen.active { display: flex; }
 
-  /* HOME */
+  /* ====================  HOME  ==================== */
   #home {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 32px;
-    padding: 24px;
+    justify-content: space-between;
+    padding: 48px 24px 72px;
     text-align: center;
+    position: relative;
   }
-  #home h1 {
-    font-size: 2.2rem;
-    margin: 0;
+  #home .brand {
+    font-weight: 700;
+    font-size: 2rem;
     letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-top: 4px;
   }
-  #home .subtitle {
-    color: var(--muted);
-    font-size: 1rem;
-    max-width: 480px;
-  }
-  .batch-card {
-    border: 2px solid #eee;
-    border-radius: 20px;
-    padding: 28px 32px;
+  #home .brand .fun { color: var(--doman-red); }
+  #home .brand .cars { color: var(--road); }
+
+  .hero {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    min-width: 280px;
+    gap: 10px;
+    margin-top: 10px;
   }
-  .batch-card .batch-name { font-size: 1.4rem; font-weight: 700; }
-  .batch-card .batch-words { color: var(--muted); font-size: 0.95rem; }
-  .btn-primary {
+  .hero .batch-chip {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .hero h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 2px 0 0;
+    letter-spacing: -0.01em;
+  }
+  .hero .words {
+    font-size: 1rem;
+    color: var(--ink);
+    opacity: 0.72;
+    font-weight: 500;
+  }
+
+  /* Escena coche + carretera */
+  .scene {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: 220px;
+    margin: 0 auto;
+  }
+  .scene svg { width: 100%; height: 100%; display: block; }
+  .scene .car-wrap {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%      { transform: translateX(-50%) translateY(-6px); }
+  }
+  .road-stripes { animation: dash 1s linear infinite; }
+  @keyframes dash {
+    from { stroke-dashoffset: 0; }
+    to   { stroke-dashoffset: -48; }
+  }
+
+  /* Botón "coche" grande */
+  .big-play {
+    position: relative;
     background: var(--doman-red);
     color: #fff;
     border: none;
-    border-radius: 999px;
-    padding: 18px 36px;
-    font-size: 1.1rem;
+    border-radius: 36px;
+    padding: 22px 48px;
+    font-size: 1.5rem;
     font-weight: 700;
+    font-family: inherit;
     cursor: pointer;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 0 #B0191C, 0 14px 24px rgba(176,25,28,0.3);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
   }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 0.95rem;
+  .big-play:active {
+    transform: translateY(6px);
+    box-shadow: 0 4px 0 #B0191C, 0 6px 10px rgba(176,25,28,0.25);
+  }
+  .big-play:disabled { opacity: 0.5; cursor: not-allowed; }
+  .big-play .pedal {
+    font-size: 1.6rem;
+    line-height: 1;
   }
 
-  /* SESSION */
+  .hint {
+    font-size: 0.85rem;
+    color: rgba(30,30,42,0.55);
+    max-width: 320px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* ====================  SESSION  ==================== */
   #session {
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
+    background: #FFFDF7;
     padding: 0;
     position: relative;
   }
@@ -94,64 +169,93 @@
     align-items: center;
     justify-content: center;
     color: var(--doman-red);
-    font-weight: 800;
+    font-weight: 600;
     text-align: center;
     line-height: 1;
-    font-size: clamp(5rem, 25vw, 20rem);
-    letter-spacing: -0.03em;
+    font-size: clamp(5rem, 26vw, 20rem);
+    letter-spacing: -0.02em;
+    font-family: "Fredoka", sans-serif;
   }
-  #cardText.black { color: #000; }
   #progress {
     position: absolute;
-    top: 20px; left: 0; right: 0;
+    top: 24px; left: 0; right: 0;
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: 10px;
     pointer-events: none;
   }
   .pass-dot {
-    width: 10px; height: 10px;
+    width: 14px; height: 14px;
     border-radius: 50%;
-    background: #eee;
+    background: #F0E6D2;
+    transition: all 0.3s ease;
   }
   .pass-dot.done { background: var(--doman-red); }
   .pass-dot.active {
     background: var(--doman-red);
-    box-shadow: 0 0 0 4px rgba(211,47,47,0.15);
+    transform: scale(1.3);
+    box-shadow: 0 0 0 6px rgba(229,57,53,0.18);
   }
 
-  /* DONE */
+  /* ====================  DONE  ==================== */
   #done {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 24px;
+    gap: 20px;
     padding: 24px;
     text-align: center;
   }
-  #done .big-emoji { font-size: 5rem; }
+  #done .trophy { font-size: 6rem; animation: pop 0.5s ease; }
+  @keyframes pop {
+    0%   { transform: scale(0); }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  #done .msg {
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
   #done .reward {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--doman-red);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: #fff;
+    border-radius: 28px;
+    padding: 14px 28px;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.08);
   }
-  #done .reward .coins { font-size: 2.4rem; }
-
-  .hint {
-    font-size: 0.85rem;
-    color: var(--muted);
-    max-width: 320px;
-    text-align: center;
+  #done .reward .coin { color: var(--doman-red); }
+  #done .btn-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: rgba(30,30,42,0.55);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 500;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #0a0a0a;
-      --fg: #f5f5f5;
-      --muted: #777;
-    }
-    :root:not([data-theme="light"]) .batch-card { border-color: #222; }
-    :root:not([data-theme="light"]) .pass-dot { background: #222; }
+  /* Confetti simple */
+  .confetti {
+    position: fixed;
+    top: -10px;
+    width: 10px; height: 14px;
+    border-radius: 2px;
+    pointer-events: none;
+    animation: fall 2.4s linear forwards;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0.6; }
   }
 </style>
 </head>
@@ -159,15 +263,59 @@
 
 <!-- HOME -->
 <section id="home" class="screen active">
-  <h1>FunCars</h1>
-  <p class="subtitle">Sesión de lectura — método Doman. 5 tarjetas, 5 pases, 1 segundo cada una.</p>
+  <div class="brand"><span class="fun">Fun</span><span class="cars">Cars</span></div>
 
-  <div class="batch-card">
-    <div class="batch-name" id="batchName">Mi mundo</div>
-    <div class="batch-words" id="batchWords">sol · agua · casa · pan · feliz</div>
+  <div class="hero">
+    <div class="batch-chip">Lote de hoy</div>
+    <h2 id="batchName">Mi mundo</h2>
+    <div class="words" id="batchWords">sol · agua · casa · pan · feliz</div>
   </div>
 
-  <button class="btn-primary" id="btnStart">Empezar sesión</button>
+  <div class="scene" aria-hidden="true">
+    <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- cielo transparente, pequeñas nubes -->
+      <ellipse cx="70"  cy="40" rx="30" ry="10" fill="#fff" opacity="0.75"/>
+      <ellipse cx="330" cy="30" rx="40" ry="12" fill="#fff" opacity="0.75"/>
+      <!-- montaña suave -->
+      <path d="M0,160 Q140,70 240,140 T420,120 L420,220 L0,220 Z" fill="#FFB380" opacity="0.4"/>
+      <!-- carretera -->
+      <rect x="0" y="160" width="420" height="60" fill="#3B3B4F"/>
+      <line class="road-stripes" x1="0" y1="190" x2="420" y2="190"
+            stroke="#FFE066" stroke-width="4" stroke-dasharray="20 12"/>
+    </svg>
+
+    <!-- Coche SVG -->
+    <div class="car-wrap">
+      <svg width="160" height="90" viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <!-- sombra -->
+        <ellipse cx="80" cy="82" rx="60" ry="5" fill="#000" opacity="0.18"/>
+        <!-- cuerpo -->
+        <path d="M12,60 Q12,42 32,38 L52,22 Q58,16 68,16 L108,16 Q118,16 124,22 L140,38 Q152,42 152,56 L152,66 Q152,72 146,72 L18,72 Q12,72 12,66 Z"
+              fill="#E53935"/>
+        <!-- techo lateral oscuro -->
+        <path d="M34,38 L54,24 Q58,20 64,20 L104,20 Q110,20 114,24 L134,38 Z"
+              fill="#B0191C" opacity="0.9"/>
+        <!-- ventanas -->
+        <path d="M58,24 L68,24 L68,38 L50,38 Z" fill="#FFF" opacity="0.9"/>
+        <path d="M72,24 L104,24 L108,38 L72,38 Z" fill="#FFF" opacity="0.9"/>
+        <!-- luz delantera -->
+        <circle cx="142" cy="56" r="4" fill="#FFEB3B"/>
+        <!-- parachoques -->
+        <rect x="10" y="60" width="8" height="8" rx="2" fill="#8E1618"/>
+        <!-- ruedas -->
+        <circle cx="42"  cy="72" r="12" fill="#1E1E2A"/>
+        <circle cx="42"  cy="72" r="5"  fill="#777"/>
+        <circle cx="118" cy="72" r="12" fill="#1E1E2A"/>
+        <circle cx="118" cy="72" r="5"  fill="#777"/>
+      </svg>
+    </div>
+  </div>
+
+  <button class="big-play" id="btnStart">
+    <span class="pedal">🚦</span>
+    <span>¡A leer!</span>
+  </button>
+
   <p class="hint" id="voiceHint">El sonido se activa al pulsar el botón.</p>
 </section>
 
@@ -179,29 +327,31 @@
 
 <!-- DONE -->
 <section id="done" class="screen">
-  <div class="big-emoji">🎉</div>
-  <div>¡Sesión completada!</div>
-  <div class="reward"><span class="coins">+3 🪙</span></div>
-  <button class="btn-primary" id="btnAgain">Volver al inicio</button>
-  <button class="btn-ghost" id="btnReset">Reiniciar prueba</button>
+  <div class="trophy">🏆</div>
+  <div class="msg">¡Lo has conseguido!</div>
+  <div class="reward">+3 <span class="coin">🪙</span></div>
+  <div class="btn-row">
+    <button class="big-play" id="btnAgain">
+      <span class="pedal">🏁</span>
+      <span>Volver</span>
+    </button>
+    <button class="btn-ghost" id="btnReset">Reiniciar prueba</button>
+  </div>
 </section>
 
 <script>
 (() => {
-  // --- Config ---
-  const CARD_MS   = 1000;   // tiempo por tarjeta (Doman: ≤1s)
-  const PAUSE_MS  = 150;    // mini-pausa entre tarjetas
-  const PASS_PAUSE_MS = 500; // pausa entre pases
+  const CARD_MS   = 1000;
+  const PAUSE_MS  = 150;
+  const PASS_PAUSE_MS = 500;
   const PASSES    = 5;
 
-  // --- Lote 1 "Mi mundo" (hardcoded en el prototipo) ---
   const BATCH = {
     id: "mi-mundo",
     name: "Mi mundo",
     cards: ["sol", "agua", "casa", "pan", "feliz"]
   };
 
-  // --- Elementos ---
   const screens = {
     home:    document.getElementById("home"),
     session: document.getElementById("session"),
@@ -224,35 +374,26 @@
       v => v.lang.startsWith("es"),
       v => true
     ];
-    for (const p of prefs) {
-      const v = vs.find(p);
-      if (v) return v;
-    }
+    for (const p of prefs) { const v = vs.find(p); if (v) return v; }
     return vs[0];
   }
   function warmUpVoices() {
     return new Promise(resolve => {
       let v = pickVoice();
       if (v) { voice = v; return resolve(voice); }
-      speechSynthesis.onvoiceschanged = () => {
-        voice = pickVoice();
-        resolve(voice);
-      };
+      speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); resolve(voice); };
     });
   }
   function speak(text) {
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "es-ES";
-      u.rate = 0.95;
-      u.pitch = 1.0;
+      u.lang = "es-ES"; u.rate = 0.95; u.pitch = 1.0;
       if (voice) u.voice = voice;
       speechSynthesis.speak(u);
-    } catch (e) { /* silencioso */ }
+    } catch (e) {}
   }
 
-  // --- Utilidades ---
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   function shuffle(a) {
     const r = a.slice();
@@ -284,7 +425,6 @@
     if (running) return;
     running = true;
     show("session");
-
     for (let pass = 0; pass < PASSES; pass++) {
       renderProgress(pass);
       const order = shuffle(BATCH.cards);
@@ -300,6 +440,21 @@
     renderProgress(PASSES);
     running = false;
     show("done");
+    launchConfetti();
+  }
+
+  function launchConfetti() {
+    const colors = ["#E53935","#4FC3F7","#66BB6A","#FFC46B","#AB47BC","#FFEB3B"];
+    for (let i = 0; i < 36; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = (Math.random() * 0.4) + "s";
+      c.style.animationDuration = (1.8 + Math.random() * 1.2) + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3500);
+    }
   }
 
   btnStart.addEventListener("click", async () => {
@@ -316,12 +471,9 @@
     show("home");
   });
 
-  if ("speechSynthesis" in window) {
-    speechSynthesis.getVoices();
-  } else {
-    document.getElementById("voiceHint").textContent =
-      "Este navegador no soporta síntesis de voz. El texto funcionará, el sonido no.";
-  }
+  if ("speechSynthesis" in window) speechSynthesis.getVoices();
+  else document.getElementById("voiceHint").textContent =
+       "Este navegador no soporta síntesis de voz. El texto funcionará, el sonido no.";
 })();
 </script>
 </body>
