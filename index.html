@@ -136,10 +136,33 @@
     transform: translateY(3px);
     box-shadow: 0 3px 0 rgba(0,0,0,0.08);
   }
-  .batch-tile[data-mastered="true"] {
+  .batch-tile[data-state="mastered"] {
     background: linear-gradient(145deg, #FFF2B8, #FFC46B);
     border-color: #FFD54F;
+    cursor: default;
   }
+  .batch-tile[data-state="cooldown"] {
+    background: rgba(255,255,255,0.4);
+    border-color: rgba(255,255,255,0.5);
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+  .batch-tile[data-state="cooldown"]:active { transform: none; }
+  .batch-tile[data-state="cooldown"] .tile-name,
+  .batch-tile[data-state="cooldown"] .tile-words { color: var(--muted); }
+  .cooldown-overlay {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--road);
+    background: rgba(255,255,255,0.65);
+    padding: 4px 10px;
+    border-radius: 999px;
+    width: fit-content;
+  }
+  .cooldown-overlay .clock { font-size: 1rem; }
   .batch-tile .tile-top {
     display: flex;
     align-items: flex-start;
@@ -158,7 +181,7 @@
     padding: 3px 8px;
     border-radius: 999px;
   }
-  .batch-tile[data-mastered="true"] .tile-badge {
+  .batch-tile[data-state="mastered"] .tile-badge {
     background: var(--doman-red);
     color: #fff;
   }
@@ -185,7 +208,7 @@
     border-radius: 3px;
     transition: width 0.3s ease;
   }
-  .batch-tile[data-mastered="true"] .tile-progress-fill {
+  .batch-tile[data-state="mastered"] .tile-progress-fill {
     background: var(--doman-red-dark);
   }
 
@@ -422,6 +445,11 @@
   const SESSIONS_TO_MASTER = 15;
   const STATE_KEY = "funcars.state.v1";
 
+  // Modo rápido para pruebas: añade ?fast a la URL y el cooldown
+  // pasa de 8h a 10s (sólo para probar la mecánica sin esperar).
+  const FAST_MODE = new URLSearchParams(location.search).has("fast");
+  const COOLDOWN_MS = FAST_MODE ? 10 * 1000 : 8 * 60 * 60 * 1000;
+
   // Emoji por lote (visual, cero semántica — solo decorar la tile)
   const BATCH_EMOJI = {
     "mi-mundo":          "🌞",
@@ -457,8 +485,40 @@
   function sessionsForBatch(s, batchId) {
     return s.sessions.filter(x => x.batch_id === batchId).length;
   }
+  function lastSessionAt(s, batchId) {
+    let last = null;
+    for (const x of s.sessions) {
+      if (x.batch_id !== batchId) continue;
+      const t = Date.parse(x.at);
+      if (!isNaN(t) && (last === null || t > last)) last = t;
+    }
+    return last;
+  }
   function isMastered(s, batchId) {
     return sessionsForBatch(s, batchId) >= SESSIONS_TO_MASTER;
+  }
+  function cooldownRemainingMs(s, batchId, now) {
+    const last = lastSessionAt(s, batchId);
+    if (last === null) return 0;
+    const r = (last + COOLDOWN_MS) - now;
+    return r > 0 ? r : 0;
+  }
+  function batchStatus(s, batchId, now) {
+    if (isMastered(s, batchId)) return "mastered";
+    if (cooldownRemainingMs(s, batchId, now) > 0) return "cooldown";
+    return "available";
+  }
+  function formatRemaining(ms) {
+    const totalSec = Math.ceil(ms / 1000);
+    if (totalSec < 60)      return totalSec + "s";
+    const totalMin = Math.ceil(ms / 60000);
+    if (totalMin < 60) {
+      const sec = Math.ceil((ms % 60000) / 1000);
+      return totalMin + "m " + (sec > 0 ? sec + "s" : "");
+    }
+    const h = Math.floor(ms / 3600000);
+    const m = Math.ceil((ms % 3600000) / 60000);
+    return h + "h " + (m > 0 ? m + "m" : "");
   }
   function completeSession(s, batchId) {
     const wasMastered = isMastered(s, batchId);
@@ -543,6 +603,7 @@
     for (const k of Object.keys(screens)) screens[k].classList.remove("active");
     screens[name].classList.add("active");
     window.scrollTo(0, 0);
+    if (name === "home") startHomeTicker(); else stopHomeTicker();
   }
 
   // ============================================================
@@ -557,31 +618,68 @@
       batchGrid.innerHTML = `<div class="loading">Cargando lotes…</div>`;
       return;
     }
+    const now = Date.now();
     batchGrid.innerHTML = "";
     for (const b of catalog.batches) {
       const done = sessionsForBatch(state, b.id);
-      const mastered = done >= SESSIONS_TO_MASTER;
-      const pct = Math.min(100, Math.round((done / SESSIONS_TO_MASTER) * 100));
+      const pct  = Math.min(100, Math.round((done / SESSIONS_TO_MASTER) * 100));
       const words = b.cards.map(c => c.text).join(" · ");
+      const status = batchStatus(state, b.id, now);
+      const remaining = cooldownRemainingMs(state, b.id, now);
+
+      let badge, extra = "";
+      if (status === "mastered") {
+        badge = "✓ Dominado";
+      } else if (status === "cooldown") {
+        badge = done + "/" + SESSIONS_TO_MASTER;
+        extra = `<div class="cooldown-overlay"><span class="clock">⏱</span> ${formatRemaining(remaining)}</div>`;
+      } else {
+        badge = done + "/" + SESSIONS_TO_MASTER;
+      }
 
       const tile = document.createElement("div");
       tile.className = "batch-tile";
-      tile.dataset.mastered = mastered ? "true" : "false";
+      tile.dataset.state = status;
       tile.dataset.batchId = b.id;
       tile.innerHTML = `
         <div class="tile-top">
           <div class="tile-emoji">${BATCH_EMOJI[b.id] || "📘"}</div>
-          <div class="tile-badge">${mastered ? "✓ Dominado" : done + "/" + SESSIONS_TO_MASTER}</div>
+          <div class="tile-badge">${badge}</div>
         </div>
         <div class="tile-name">${b.name}</div>
         <div class="tile-words">${words}</div>
+        ${extra}
         <div class="tile-progress">
           <div class="tile-progress-fill" style="width:${pct}%"></div>
         </div>
       `;
-      tile.addEventListener("click", () => startSession(b));
+      if (status === "available") {
+        tile.addEventListener("click", () => startSession(b));
+      }
       batchGrid.appendChild(tile);
     }
+  }
+
+  // Ticker: refresca contadores de cooldown cada segundo cuando la home
+  // está visible, parando al salir de la home para no gastar batería.
+  let tickerId = null;
+  function startHomeTicker() {
+    if (tickerId !== null) return;
+    tickerId = setInterval(() => {
+      if (!screens.home.classList.contains("active")) {
+        stopHomeTicker();
+        return;
+      }
+      // Sólo re-render si hay algún cooldown activo
+      const now = Date.now();
+      const anyCd = catalog && catalog.batches.some(b =>
+        batchStatus(state, b.id, now) === "cooldown"
+      );
+      if (anyCd) renderBatchGrid();
+    }, 1000);
+  }
+  function stopHomeTicker() {
+    if (tickerId !== null) { clearInterval(tickerId); tickerId = null; }
   }
 
   // ============================================================
@@ -689,6 +787,7 @@
     renderWallet();
     await loadCatalog();
     renderBatchGrid();
+    startHomeTicker();
     if ("speechSynthesis" in window) speechSynthesis.getVoices();
   })();
 })();
