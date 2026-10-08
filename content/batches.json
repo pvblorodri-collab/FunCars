@@ -1,0 +1,145 @@
+{
+  "language": "es-ES",
+  "batches": [
+    {
+      "id": "mi-mundo",
+      "order": 1,
+      "name": "Mi mundo",
+      "phase": "familiar_words",
+      "text_color": "red",
+      "cards": [
+        { "text": "sol",   "order": 1 },
+        { "text": "agua",  "order": 2 },
+        { "text": "casa",  "order": 3 },
+        { "text": "pan",   "order": 4 },
+        { "text": "feliz", "order": 5 }
+      ]
+    },
+    {
+      "id": "mi-cuerpo",
+      "order": 2,
+      "name": "Mi cuerpo",
+      "phase": "familiar_words",
+      "text_color": "red",
+      "cards": [
+        { "text": "ojo",   "order": 1 },
+        { "text": "boca",  "order": 2 },
+        { "text": "mano",  "order": 3 },
+        { "text": "pie",   "order": 4 },
+        { "text": "nariz", "order": 5 }
+      ]
+    },
+    {
+      "id": "animales-cercanos",
+      "order": 3,
+      "name": "Animales cercanos",
+      "phase": "familiar_words",
+      "text_color": "red",
+      "cards": [
+        { "text": "perro", "order": 1 },
+        { "text": "gato",  "order": 2 },
+        { "text": "pato",  "order": 3 },
+        { "text": "pez",   "order": 4 },
+        { "text": "oso",   "order": 5 }
+      ]
+    },
+    {
+      "id": "animales-granja",
+      "order": 4,
+      "name": "Animales de granja",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "vaca",    "order": 1 },
+        { "text": "pollo",   "order": 2 },
+        { "text": "caballo", "order": 3 },
+        { "text": "oveja",   "order": 4 },
+        { "text": "cerdo",   "order": 5 }
+      ]
+    },
+    {
+      "id": "comida",
+      "order": 5,
+      "name": "Comida",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "leche",   "order": 1 },
+        { "text": "manzana", "order": 2 },
+        { "text": "queso",   "order": 3 },
+        { "text": "huevo",   "order": 4 },
+        { "text": "uva",     "order": 5 }
+      ]
+    },
+    {
+      "id": "naturaleza",
+      "order": 6,
+      "name": "Naturaleza",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "luna",     "order": 1 },
+        { "text": "flor",     "order": 2 },
+        { "text": "árbol",    "order": 3 },
+        { "text": "nube",     "order": 4 },
+        { "text": "estrella", "order": 5 }
+      ]
+    },
+    {
+      "id": "objetos-casa",
+      "order": 7,
+      "name": "Objetos de casa",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "pelota", "order": 1 },
+        { "text": "silla",  "order": 2 },
+        { "text": "cama",   "order": 3 },
+        { "text": "libro",  "order": 4 },
+        { "text": "taza",   "order": 5 }
+      ]
+    },
+    {
+      "id": "colores",
+      "order": 8,
+      "name": "Colores",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "rojo",     "order": 1 },
+        { "text": "azul",     "order": 2 },
+        { "text": "verde",    "order": 3 },
+        { "text": "amarillo", "order": 4 },
+        { "text": "negro",    "order": 5 }
+      ]
+    },
+    {
+      "id": "afectos",
+      "order": 9,
+      "name": "Afectos",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "risa",   "order": 1 },
+        { "text": "abrazo", "order": 2 },
+        { "text": "beso",   "order": 3 },
+        { "text": "amor",   "order": 4 },
+        { "text": "baile",  "order": 5 }
+      ]
+    },
+    {
+      "id": "acciones",
+      "order": 10,
+      "name": "Acciones",
+      "phase": "expanded_vocab",
+      "text_color": "red",
+      "cards": [
+        { "text": "correr", "order": 1 },
+        { "text": "saltar", "order": 2 },
+        { "text": "dormir", "order": 3 },
+        { "text": "comer",  "order": 4 },
+        { "text": "jugar",  "order": 5 }
+      ]
+    }
+  ]
+}

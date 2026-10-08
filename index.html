@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FunCars — Mi mundo</title>
+<style>
+  :root {
+    --doman-red: #D32F2F;
+    --bg: #ffffff;
+    --fg: #111;
+    --muted: #8a8a8a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body { display: flex; align-items: center; justify-content: center; }
+
+  .screen { display: none; width: 100%; height: 100%; }
+  .screen.active { display: flex; }
+
+  /* HOME */
+  #home {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 24px;
+    text-align: center;
+  }
+  #home h1 {
+    font-size: 2.2rem;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  #home .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 480px;
+  }
+  .batch-card {
+    border: 2px solid #eee;
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    min-width: 280px;
+  }
+  .batch-card .batch-name { font-size: 1.4rem; font-weight: 700; }
+  .batch-card .batch-words { color: var(--muted); font-size: 0.95rem; }
+  .btn-primary {
+    background: var(--doman-red);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 18px 36px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+
+  /* SESSION */
+  #session {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+  }
+  #cardText {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--doman-red);
+    font-weight: 800;
+    text-align: center;
+    line-height: 1;
+    font-size: clamp(5rem, 25vw, 20rem);
+    letter-spacing: -0.03em;
+  }
+  #cardText.black { color: #000; }
+  #progress {
+    position: absolute;
+    top: 20px; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .pass-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #eee;
+  }
+  .pass-dot.done { background: var(--doman-red); }
+  .pass-dot.active {
+    background: var(--doman-red);
+    box-shadow: 0 0 0 4px rgba(211,47,47,0.15);
+  }
+
+  /* DONE */
+  #done {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 24px;
+    text-align: center;
+  }
+  #done .big-emoji { font-size: 5rem; }
+  #done .reward {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--doman-red);
+  }
+  #done .reward .coins { font-size: 2.4rem; }
+
+  .hint {
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 320px;
+    text-align: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a0a0a;
+      --fg: #f5f5f5;
+      --muted: #777;
+    }
+    :root:not([data-theme="light"]) .batch-card { border-color: #222; }
+    :root:not([data-theme="light"]) .pass-dot { background: #222; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<section id="home" class="screen active">
+  <h1>FunCars</h1>
+  <p class="subtitle">Sesión de lectura — método Doman. 5 tarjetas, 5 pases, 1 segundo cada una.</p>
+
+  <div class="batch-card">
+    <div class="batch-name" id="batchName">Mi mundo</div>
+    <div class="batch-words" id="batchWords">sol · agua · casa · pan · feliz</div>
+  </div>
+
+  <button class="btn-primary" id="btnStart">Empezar sesión</button>
+  <p class="hint" id="voiceHint">El sonido se activa al pulsar el botón.</p>
+</section>
+
+<!-- SESSION -->
+<section id="session" class="screen">
+  <div id="progress"></div>
+  <div id="cardText">—</div>
+</section>
+
+<!-- DONE -->
+<section id="done" class="screen">
+  <div class="big-emoji">🎉</div>
+  <div>¡Sesión completada!</div>
+  <div class="reward"><span class="coins">+3 🪙</span></div>
+  <button class="btn-primary" id="btnAgain">Volver al inicio</button>
+  <button class="btn-ghost" id="btnReset">Reiniciar prueba</button>
+</section>
+
+<script>
+(() => {
+  // --- Config ---
+  const CARD_MS   = 1000;   // tiempo por tarjeta (Doman: ≤1s)
+  const PAUSE_MS  = 150;    // mini-pausa entre tarjetas
+  const PASS_PAUSE_MS = 500; // pausa entre pases
+  const PASSES    = 5;
+
+  // --- Lote 1 "Mi mundo" (hardcoded en el prototipo) ---
+  const BATCH = {
+    id: "mi-mundo",
+    name: "Mi mundo",
+    cards: ["sol", "agua", "casa", "pan", "feliz"]
+  };
+
+  // --- Elementos ---
+  const screens = {
+    home:    document.getElementById("home"),
+    session: document.getElementById("session"),
+    done:    document.getElementById("done")
+  };
+  const cardText = document.getElementById("cardText");
+  const progress = document.getElementById("progress");
+  const btnStart = document.getElementById("btnStart");
+  const btnAgain = document.getElementById("btnAgain");
+  const btnReset = document.getElementById("btnReset");
+
+  // --- Voz ---
+  let voice = null;
+  function pickVoice() {
+    const vs = speechSynthesis.getVoices();
+    if (!vs.length) return null;
+    const prefs = [
+      v => v.lang === "es-ES" && !v.localService,
+      v => v.lang === "es-ES",
+      v => v.lang.startsWith("es"),
+      v => true
+    ];
+    for (const p of prefs) {
+      const v = vs.find(p);
+      if (v) return v;
+    }
+    return vs[0];
+  }
+  function warmUpVoices() {
+    return new Promise(resolve => {
+      let v = pickVoice();
+      if (v) { voice = v; return resolve(voice); }
+      speechSynthesis.onvoiceschanged = () => {
+        voice = pickVoice();
+        resolve(voice);
+      };
+    });
+  }
+  function speak(text) {
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "es-ES";
+      u.rate = 0.95;
+      u.pitch = 1.0;
+      if (voice) u.voice = voice;
+      speechSynthesis.speak(u);
+    } catch (e) { /* silencioso */ }
+  }
+
+  // --- Utilidades ---
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  function shuffle(a) {
+    const r = a.slice();
+    for (let i = r.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [r[i], r[j]] = [r[j], r[i]];
+    }
+    return r;
+  }
+
+  function show(name) {
+    for (const k of Object.keys(screens)) screens[k].classList.remove("active");
+    screens[name].classList.add("active");
+  }
+
+  function renderProgress(currentPass) {
+    progress.innerHTML = "";
+    for (let i = 0; i < PASSES; i++) {
+      const d = document.createElement("div");
+      d.className = "pass-dot" +
+        (i < currentPass ? " done" :
+         i === currentPass ? " active" : "");
+      progress.appendChild(d);
+    }
+  }
+
+  let running = false;
+  async function runSession() {
+    if (running) return;
+    running = true;
+    show("session");
+
+    for (let pass = 0; pass < PASSES; pass++) {
+      renderProgress(pass);
+      const order = shuffle(BATCH.cards);
+      for (const word of order) {
+        cardText.textContent = word;
+        speak(word);
+        await sleep(CARD_MS);
+        cardText.textContent = "";
+        await sleep(PAUSE_MS);
+      }
+      await sleep(PASS_PAUSE_MS);
+    }
+    renderProgress(PASSES);
+    running = false;
+    show("done");
+  }
+
+  btnStart.addEventListener("click", async () => {
+    btnStart.disabled = true;
+    await warmUpVoices();
+    try { speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch(e){}
+    btnStart.disabled = false;
+    runSession();
+  });
+
+  btnAgain.addEventListener("click", () => show("home"));
+  btnReset.addEventListener("click", () => {
+    speechSynthesis.cancel();
+    show("home");
+  });
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.getVoices();
+  } else {
+    document.getElementById("voiceHint").textContent =
+      "Este navegador no soporta síntesis de voz. El texto funcionará, el sonido no.";
+  }
+})();
+</script>
+</body>
+</html>
