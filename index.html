@@ -150,6 +150,58 @@
   .batch-tile[data-state="cooldown"]:active { transform: none; }
   .batch-tile[data-state="cooldown"] .tile-name,
   .batch-tile[data-state="cooldown"] .tile-words { color: var(--muted); }
+  .batch-tile[data-state="inactive"] {
+    background: rgba(255,255,255,0.35);
+    border-color: rgba(255,255,255,0.5);
+    opacity: 0.65;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.04);
+  }
+  .batch-tile[data-state="inactive"] .tile-name,
+  .batch-tile[data-state="inactive"] .tile-words { color: var(--muted); }
+  .batch-tile[data-state="inactive"] .activate-chip {
+    background: var(--doman-red);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .deactivate-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    z-index: 2;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+  }
+  .deactivate-btn:active { transform: translateY(1px); }
+
+  .active-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 20px 4px;
+  }
+  .active-counter.warn { background: #fff; color: var(--doman-red); }
   .cooldown-overlay {
     display: flex;
     align-items: center;
@@ -602,7 +654,8 @@
     </div>
   </div>
 
-  <h2 class="section-title">Elige lote</h2>
+  <h2 class="section-title">Lotes</h2>
+  <div id="activeCounter" class="active-counter">0 de 2 lotes activos</div>
   <div id="batchGrid" class="batches">
     <div class="loading">Cargando lotes…</div>
   </div>
@@ -712,6 +765,7 @@
   const PASSES        = 5;
   const COINS_PER_SESSION = 3;
   const SESSIONS_TO_MASTER = 15;
+  const MAX_ACTIVE_BATCHES = 2;
   const STATE_KEY = "funcars.state.v1";
 
   // Modo rápido para pruebas: añade ?fast a la URL y el cooldown
@@ -737,7 +791,7 @@
   //  STATE (localStorage)
   // ============================================================
   function newState() {
-    return { v: 1, coins: 0, sessions: [] };
+    return { v: 1, coins: 0, sessions: [], active_batches: [] };
   }
   function loadState() {
     try {
@@ -745,8 +799,24 @@
       if (!raw) return newState();
       const s = JSON.parse(raw);
       if (!s || s.v !== 1 || !Array.isArray(s.sessions)) return newState();
+      if (!Array.isArray(s.active_batches)) s.active_batches = [];
       return s;
     } catch (e) { return newState(); }
+  }
+  function isActive(s, batchId) {
+    return s.active_batches.includes(batchId);
+  }
+  function activeCount(s) { return s.active_batches.length; }
+  function activateBatch(s, batchId) {
+    if (isActive(s, batchId)) return true;
+    if (activeCount(s) >= MAX_ACTIVE_BATCHES) return false;
+    s.active_batches = [...s.active_batches, batchId];
+    saveState(s);
+    return true;
+  }
+  function deactivateBatch(s, batchId) {
+    s.active_batches = s.active_batches.filter(id => id !== batchId);
+    saveState(s);
   }
   function saveState(s) {
     try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch (e) {}
@@ -774,6 +844,7 @@
   }
   function batchStatus(s, batchId, now) {
     if (isMastered(s, batchId)) return "mastered";
+    if (!isActive(s, batchId))  return "inactive";
     if (cooldownRemainingMs(s, batchId, now) > 0) return "cooldown";
     return "available";
   }
@@ -793,8 +864,12 @@
     const wasMastered = isMastered(s, batchId);
     s.sessions.push({ batch_id: batchId, at: new Date().toISOString() });
     s.coins += COINS_PER_SESSION;
-    saveState(s);
     const nowMastered = isMastered(s, batchId);
+    // Dominar un lote libera su slot de "activo"
+    if (!wasMastered && nowMastered) {
+      s.active_batches = s.active_batches.filter(id => id !== batchId);
+    }
+    saveState(s);
     return { justMastered: !wasMastered && nowMastered };
   }
   function resetState() {
@@ -819,6 +894,7 @@
   const walletCount   = document.getElementById("walletCount");
   const walletCountW  = document.getElementById("walletCountW");
   const batchGrid     = document.getElementById("batchGrid");
+  const activeCounter = document.getElementById("activeCounter");
   const wordsCount    = document.getElementById("wordsCount");
   const wordsBody     = document.getElementById("wordsBody");
   const cardText      = document.getElementById("cardText");
@@ -957,11 +1033,18 @@
     setTimeout(() => el.classList.remove("speaking"), 600);
   }
 
+  function renderActiveCounter() {
+    const n = activeCount(state);
+    activeCounter.textContent = n + " de " + MAX_ACTIVE_BATCHES + " lotes activos";
+    activeCounter.classList.toggle("warn", n === 0);
+  }
+
   function renderBatchGrid() {
     if (!catalog) {
       batchGrid.innerHTML = `<div class="loading">Cargando lotes…</div>`;
       return;
     }
+    renderActiveCounter();
     const now = Date.now();
     batchGrid.innerHTML = "";
     for (const b of catalog.batches) {
@@ -971,14 +1054,18 @@
       const status = batchStatus(state, b.id, now);
       const remaining = cooldownRemainingMs(state, b.id, now);
 
-      let badge, extra = "";
+      let badge, extra = "", corner = "";
       if (status === "mastered") {
         badge = "✓ Dominado";
       } else if (status === "cooldown") {
         badge = done + "/" + SESSIONS_TO_MASTER;
         extra = `<div class="cooldown-overlay"><span class="clock">⏱</span> ${formatRemaining(remaining)}</div>`;
-      } else {
+        corner = `<button class="deactivate-btn" data-deactivate aria-label="Desactivar">✕</button>`;
+      } else if (status === "available") {
         badge = done + "/" + SESSIONS_TO_MASTER;
+        corner = `<button class="deactivate-btn" data-deactivate aria-label="Desactivar">✕</button>`;
+      } else { // inactive
+        badge = `<span class="activate-chip">➕ Activar</span>`;
       }
 
       const tile = document.createElement("div");
@@ -986,6 +1073,7 @@
       tile.dataset.state = status;
       tile.dataset.batchId = b.id;
       tile.innerHTML = `
+        ${corner}
         <div class="tile-top">
           <div class="tile-emoji">${BATCH_EMOJI[b.id] || "📘"}</div>
           <div class="tile-badge">${badge}</div>
@@ -997,8 +1085,30 @@
           <div class="tile-progress-fill" style="width:${pct}%"></div>
         </div>
       `;
+
+      // Clicks sobre el botón de desactivar (si existe)
+      const deactBtn = tile.querySelector("[data-deactivate]");
+      if (deactBtn) {
+        deactBtn.addEventListener("click", ev => {
+          ev.stopPropagation();
+          if (!confirm("¿Desactivar \"" + b.name + "\"? Su progreso se conserva y puedes reactivarlo cuando quieras.")) return;
+          deactivateBatch(state, b.id);
+          renderBatchGrid();
+        });
+      }
+
+      // Click sobre la tile
       if (status === "available") {
         tile.addEventListener("click", () => startSession(b));
+      } else if (status === "inactive") {
+        tile.addEventListener("click", () => {
+          const ok = activateBatch(state, b.id);
+          if (!ok) {
+            alert("Ya tienes " + MAX_ACTIVE_BATCHES + " lotes activos. Desactiva uno (botón ✕) antes de activar otro.");
+            return;
+          }
+          renderBatchGrid();
+        });
       }
       batchGrid.appendChild(tile);
     }
