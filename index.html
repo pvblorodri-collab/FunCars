@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FunCars — Mi mundo</title>
+<title>FunCars</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --doman-red: #E53935;
+    --doman-red-dark: #B0191C;
     --sky-1: #FFE98A;
     --sky-2: #FFC46B;
     --sky-3: #FF8A5B;
@@ -20,11 +21,15 @@
     --muted:  #6b6b7a;
     --accent-blue: #4FC3F7;
     --accent-green: #66BB6A;
+    --accent-purple: #AB47BC;
+    --accent-yellow: #FFC107;
+    --card-bg: rgba(255,255,255,0.72);
+    --card-border: rgba(255,255,255,0.9);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; padding: 0;
-    height: 100%;
+    min-height: 100%;
     font-family: "Fredoka", -apple-system, system-ui, sans-serif;
     color: var(--ink);
     overscroll-behavior: none;
@@ -33,76 +38,56 @@
   }
   body {
     background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-attachment: fixed;
     min-height: 100vh;
-    overflow: hidden;
   }
 
-  .screen { display: none; width: 100%; min-height: 100vh; }
-  .screen.active { display: flex; }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
 
-  /* ====================  HOME  ==================== */
-  #home {
-    flex-direction: column;
+  /* ====================  TOP BAR  ==================== */
+  .topbar {
+    display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 48px 24px 72px;
-    text-align: center;
-    position: relative;
+    padding: 18px 20px 10px;
   }
-  #home .brand {
+  .brand {
     font-weight: 700;
-    font-size: 2rem;
+    font-size: 1.6rem;
     letter-spacing: -0.02em;
-    color: var(--ink);
-    margin-top: 4px;
   }
-  #home .brand .fun { color: var(--doman-red); }
-  #home .brand .cars { color: var(--road); }
-
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  .hero .batch-chip {
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(6px);
+  .brand .fun { color: var(--doman-red); }
+  .brand .cars { color: var(--road); }
+  .wallet {
+    background: #fff;
     border-radius: 999px;
-    padding: 8px 18px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--ink);
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.08);
   }
-  .hero h2 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin: 2px 0 0;
-    letter-spacing: -0.01em;
-  }
-  .hero .words {
-    font-size: 1rem;
-    color: var(--ink);
-    opacity: 0.72;
-    font-weight: 500;
-  }
+  .wallet .coin { font-size: 1.2rem; }
 
-  /* Escena coche + carretera */
-  .scene {
+  /* ====================  HERO  ==================== */
+  .hero-wrap {
+    text-align: center;
+    padding: 10px 20px 0;
+  }
+  .hero-wrap .scene {
     position: relative;
     width: 100%;
     max-width: 420px;
-    height: 220px;
+    height: 180px;
     margin: 0 auto;
   }
-  .scene svg { width: 100%; height: 100%; display: block; }
-  .scene .car-wrap {
+  .hero-wrap .scene svg { width: 100%; height: 100%; display: block; }
+  .hero-wrap .car-wrap {
     position: absolute;
-    bottom: 40px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     animation: bounce 1.6s ease-in-out infinite;
@@ -117,51 +102,105 @@
     to   { stroke-dashoffset: -48; }
   }
 
-  /* Botón "coche" grande */
-  .big-play {
-    position: relative;
-    background: var(--doman-red);
-    color: #fff;
-    border: none;
-    border-radius: 36px;
-    padding: 22px 48px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-    box-shadow: 0 10px 0 #B0191C, 0 14px 24px rgba(176,25,28,0.3);
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-    display: inline-flex;
-    align-items: center;
+  /* ====================  BATCH GRID  ==================== */
+  .section-title {
+    font-weight: 600;
+    font-size: 1.15rem;
+    padding: 20px 24px 10px;
+    color: var(--ink);
+    opacity: 0.85;
+  }
+  .batches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 14px;
+    padding: 4px 20px 40px;
   }
-  .big-play:active {
-    transform: translateY(6px);
-    box-shadow: 0 4px 0 #B0191C, 0 6px 10px rgba(176,25,28,0.25);
+  .batch-tile {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    border: 2px solid var(--card-border);
+    border-radius: 22px;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
   }
-  .big-play:disabled { opacity: 0.5; cursor: not-allowed; }
-  .big-play .pedal {
+  .batch-tile:active {
+    transform: translateY(3px);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+  }
+  .batch-tile[data-mastered="true"] {
+    background: linear-gradient(145deg, #FFF2B8, #FFC46B);
+    border-color: #FFD54F;
+  }
+  .batch-tile .tile-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .batch-tile .tile-emoji {
     font-size: 1.6rem;
     line-height: 1;
   }
-
-  .hint {
-    font-size: 0.85rem;
-    color: rgba(30,30,42,0.55);
-    max-width: 320px;
-    text-align: center;
-    font-weight: 500;
+  .batch-tile .tile-badge {
+    background: #fff;
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .batch-tile[data-mastered="true"] .tile-badge {
+    background: var(--doman-red);
+    color: #fff;
+  }
+  .batch-tile .tile-name {
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .batch-tile .tile-words {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .batch-tile .tile-progress {
+    margin-top: auto;
+    height: 6px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .batch-tile .tile-progress-fill {
+    height: 100%;
+    background: var(--doman-red);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+  .batch-tile[data-mastered="true"] .tile-progress-fill {
+    background: var(--doman-red-dark);
   }
 
   /* ====================  SESSION  ==================== */
   #session {
+    background: #FFFDF7;
+    position: relative;
+  }
+  #session .session-inner {
+    min-height: 100vh;
+    display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    background: #FFFDF7;
     padding: 0;
-    position: relative;
   }
   #cardText {
     flex: 1;
@@ -174,7 +213,6 @@
     line-height: 1;
     font-size: clamp(5rem, 26vw, 20rem);
     letter-spacing: -0.02em;
-    font-family: "Fredoka", sans-serif;
   }
   #progress {
     position: absolute;
@@ -196,9 +234,20 @@
     transform: scale(1.3);
     box-shadow: 0 0 0 6px rgba(229,57,53,0.18);
   }
+  #sessionTitle {
+    position: absolute;
+    top: 56px; left: 0; right: 0;
+    text-align: center;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    pointer-events: none;
+  }
 
   /* ====================  DONE  ==================== */
-  #done {
+  #done .done-inner {
+    min-height: 100vh;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -206,7 +255,7 @@
     padding: 24px;
     text-align: center;
   }
-  #done .trophy { font-size: 6rem; animation: pop 0.5s ease; }
+  #done .trophy { font-size: 5.5rem; animation: pop 0.5s ease; }
   @keyframes pop {
     0%   { transform: scale(0); }
     60%  { transform: scale(1.2); }
@@ -217,7 +266,7 @@
     font-weight: 600;
   }
   #done .reward {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
     font-weight: 700;
     color: var(--ink);
     background: #fff;
@@ -226,13 +275,40 @@
     box-shadow: 0 8px 0 rgba(0,0,0,0.08);
   }
   #done .reward .coin { color: var(--doman-red); }
-  #done .btn-row {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    margin-top: 10px;
+  #done .mastered-badge {
+    background: linear-gradient(145deg, #FFF2B8, #FFC46B);
+    border: 2px solid #FFD54F;
+    color: var(--doman-red-dark);
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-size: 1rem;
   }
+
+  /* ====================  BOTONES  ==================== */
+  .big-btn {
+    position: relative;
+    background: var(--doman-red);
+    color: #fff;
+    border: none;
+    border-radius: 32px;
+    padding: 18px 36px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    box-shadow: 0 8px 0 var(--doman-red-dark), 0 12px 20px rgba(176,25,28,0.28);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .big-btn:active {
+    transform: translateY(5px);
+    box-shadow: 0 3px 0 var(--doman-red-dark), 0 4px 8px rgba(176,25,28,0.2);
+  }
+  .big-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-ghost {
     background: transparent;
     color: rgba(30,30,42,0.55);
@@ -244,7 +320,7 @@
     font-weight: 500;
   }
 
-  /* Confetti simple */
+  /* ====================  CONFETTI  ==================== */
   .confetti {
     position: fixed;
     top: -10px;
@@ -252,118 +328,175 @@
     border-radius: 2px;
     pointer-events: none;
     animation: fall 2.4s linear forwards;
+    z-index: 999;
   }
   @keyframes fall {
     0%   { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
     100% { transform: translateY(110vh) rotate(720deg); opacity: 0.6; }
   }
+
+  /* ====================  LOADING  ==================== */
+  .loading { text-align: center; padding: 40px; color: var(--muted); font-weight: 500; }
 </style>
 </head>
 <body>
 
-<!-- HOME -->
+<!-- ====================  HOME  ==================== -->
 <section id="home" class="screen active">
-  <div class="brand"><span class="fun">Fun</span><span class="cars">Cars</span></div>
-
-  <div class="hero">
-    <div class="batch-chip">Lote de hoy</div>
-    <h2 id="batchName">Mi mundo</h2>
-    <div class="words" id="batchWords">sol · agua · casa · pan · feliz</div>
+  <div class="topbar">
+    <div class="brand"><span class="fun">Fun</span><span class="cars">Cars</span></div>
+    <div class="wallet"><span id="walletCount">0</span> <span class="coin">🪙</span></div>
   </div>
 
-  <div class="scene" aria-hidden="true">
-    <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-      <!-- cielo transparente, pequeñas nubes -->
-      <ellipse cx="70"  cy="40" rx="30" ry="10" fill="#fff" opacity="0.75"/>
-      <ellipse cx="330" cy="30" rx="40" ry="12" fill="#fff" opacity="0.75"/>
-      <!-- montaña suave -->
-      <path d="M0,160 Q140,70 240,140 T420,120 L420,220 L0,220 Z" fill="#FFB380" opacity="0.4"/>
-      <!-- carretera -->
-      <rect x="0" y="160" width="420" height="60" fill="#3B3B4F"/>
-      <line class="road-stripes" x1="0" y1="190" x2="420" y2="190"
-            stroke="#FFE066" stroke-width="4" stroke-dasharray="20 12"/>
-    </svg>
-
-    <!-- Coche SVG -->
-    <div class="car-wrap">
-      <svg width="160" height="90" viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
-        <!-- sombra -->
-        <ellipse cx="80" cy="82" rx="60" ry="5" fill="#000" opacity="0.18"/>
-        <!-- cuerpo -->
-        <path d="M12,60 Q12,42 32,38 L52,22 Q58,16 68,16 L108,16 Q118,16 124,22 L140,38 Q152,42 152,56 L152,66 Q152,72 146,72 L18,72 Q12,72 12,66 Z"
-              fill="#E53935"/>
-        <!-- techo lateral oscuro -->
-        <path d="M34,38 L54,24 Q58,20 64,20 L104,20 Q110,20 114,24 L134,38 Z"
-              fill="#B0191C" opacity="0.9"/>
-        <!-- ventanas -->
-        <path d="M58,24 L68,24 L68,38 L50,38 Z" fill="#FFF" opacity="0.9"/>
-        <path d="M72,24 L104,24 L108,38 L72,38 Z" fill="#FFF" opacity="0.9"/>
-        <!-- luz delantera -->
-        <circle cx="142" cy="56" r="4" fill="#FFEB3B"/>
-        <!-- parachoques -->
-        <rect x="10" y="60" width="8" height="8" rx="2" fill="#8E1618"/>
-        <!-- ruedas -->
-        <circle cx="42"  cy="72" r="12" fill="#1E1E2A"/>
-        <circle cx="42"  cy="72" r="5"  fill="#777"/>
-        <circle cx="118" cy="72" r="12" fill="#1E1E2A"/>
-        <circle cx="118" cy="72" r="5"  fill="#777"/>
+  <div class="hero-wrap">
+    <div class="scene" aria-hidden="true">
+      <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="70"  cy="40" rx="30" ry="10" fill="#fff" opacity="0.75"/>
+        <ellipse cx="330" cy="30" rx="40" ry="12" fill="#fff" opacity="0.75"/>
+        <path d="M0,160 Q140,70 240,140 T420,120 L420,220 L0,220 Z" fill="#FFB380" opacity="0.4"/>
+        <rect x="0" y="160" width="420" height="60" fill="#3B3B4F"/>
+        <line class="road-stripes" x1="0" y1="190" x2="420" y2="190"
+              stroke="#FFE066" stroke-width="4" stroke-dasharray="20 12"/>
       </svg>
+      <div class="car-wrap">
+        <svg width="140" height="80" viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="80" cy="82" rx="60" ry="5" fill="#000" opacity="0.18"/>
+          <path d="M12,60 Q12,42 32,38 L52,22 Q58,16 68,16 L108,16 Q118,16 124,22 L140,38 Q152,42 152,56 L152,66 Q152,72 146,72 L18,72 Q12,72 12,66 Z"
+                fill="#E53935"/>
+          <path d="M34,38 L54,24 Q58,20 64,20 L104,20 Q110,20 114,24 L134,38 Z"
+                fill="#B0191C" opacity="0.9"/>
+          <path d="M58,24 L68,24 L68,38 L50,38 Z" fill="#FFF" opacity="0.9"/>
+          <path d="M72,24 L104,24 L108,38 L72,38 Z" fill="#FFF" opacity="0.9"/>
+          <circle cx="142" cy="56" r="4" fill="#FFEB3B"/>
+          <rect x="10" y="60" width="8" height="8" rx="2" fill="#8E1618"/>
+          <circle cx="42"  cy="72" r="12" fill="#1E1E2A"/>
+          <circle cx="42"  cy="72" r="5"  fill="#777"/>
+          <circle cx="118" cy="72" r="12" fill="#1E1E2A"/>
+          <circle cx="118" cy="72" r="5"  fill="#777"/>
+        </svg>
+      </div>
     </div>
   </div>
 
-  <button class="big-play" id="btnStart">
-    <span class="pedal">🚦</span>
-    <span>¡A leer!</span>
-  </button>
-
-  <p class="hint" id="voiceHint">El sonido se activa al pulsar el botón.</p>
+  <h2 class="section-title">Elige lote</h2>
+  <div id="batchGrid" class="batches">
+    <div class="loading">Cargando lotes…</div>
+  </div>
 </section>
 
-<!-- SESSION -->
+<!-- ====================  SESSION  ==================== -->
 <section id="session" class="screen">
-  <div id="progress"></div>
-  <div id="cardText">—</div>
+  <div class="session-inner">
+    <div id="progress"></div>
+    <div id="sessionTitle"></div>
+    <div id="cardText">—</div>
+  </div>
 </section>
 
-<!-- DONE -->
+<!-- ====================  DONE  ==================== -->
 <section id="done" class="screen">
-  <div class="trophy">🏆</div>
-  <div class="msg">¡Lo has conseguido!</div>
-  <div class="reward">+3 <span class="coin">🪙</span></div>
-  <div class="btn-row">
-    <button class="big-play" id="btnAgain">
-      <span class="pedal">🏁</span>
-      <span>Volver</span>
+  <div class="done-inner">
+    <div class="trophy">🏆</div>
+    <div class="msg" id="doneMsg">¡Lo has conseguido!</div>
+    <div class="reward">+3 <span class="coin">🪙</span></div>
+    <div id="masteredBadge" class="mastered-badge" style="display:none;">
+      🎖️ ¡Lote completado!
+    </div>
+    <button class="big-btn" id="btnAgain">
+      <span>🏁</span><span>Volver</span>
     </button>
-    <button class="btn-ghost" id="btnReset">Reiniciar prueba</button>
+    <button class="btn-ghost" id="btnReset">Reiniciar progreso</button>
   </div>
 </section>
 
 <script>
 (() => {
-  const CARD_MS   = 1000;
-  const PAUSE_MS  = 150;
+  // ============================================================
+  //  CONFIG
+  // ============================================================
+  const CARD_MS       = 1000;
+  const PAUSE_MS      = 150;
   const PASS_PAUSE_MS = 500;
-  const PASSES    = 5;
+  const PASSES        = 5;
+  const COINS_PER_SESSION = 3;
+  const SESSIONS_TO_MASTER = 15;
+  const STATE_KEY = "funcars.state.v1";
 
-  const BATCH = {
-    id: "mi-mundo",
-    name: "Mi mundo",
-    cards: ["sol", "agua", "casa", "pan", "feliz"]
+  // Emoji por lote (visual, cero semántica — solo decorar la tile)
+  const BATCH_EMOJI = {
+    "mi-mundo":          "🌞",
+    "mi-cuerpo":         "👁️",
+    "animales-cercanos": "🐶",
+    "animales-granja":   "🐄",
+    "comida":            "🍎",
+    "naturaleza":        "🌙",
+    "objetos-casa":      "🛋️",
+    "colores":           "🎨",
+    "afectos":           "💞",
+    "acciones":          "🏃"
   };
 
+  // ============================================================
+  //  STATE (localStorage)
+  // ============================================================
+  function newState() {
+    return { v: 1, coins: 0, sessions: [] };
+  }
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STATE_KEY);
+      if (!raw) return newState();
+      const s = JSON.parse(raw);
+      if (!s || s.v !== 1 || !Array.isArray(s.sessions)) return newState();
+      return s;
+    } catch (e) { return newState(); }
+  }
+  function saveState(s) {
+    try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  function sessionsForBatch(s, batchId) {
+    return s.sessions.filter(x => x.batch_id === batchId).length;
+  }
+  function isMastered(s, batchId) {
+    return sessionsForBatch(s, batchId) >= SESSIONS_TO_MASTER;
+  }
+  function completeSession(s, batchId) {
+    const wasMastered = isMastered(s, batchId);
+    s.sessions.push({ batch_id: batchId, at: new Date().toISOString() });
+    s.coins += COINS_PER_SESSION;
+    saveState(s);
+    const nowMastered = isMastered(s, batchId);
+    return { justMastered: !wasMastered && nowMastered };
+  }
+  function resetState() {
+    localStorage.removeItem(STATE_KEY);
+  }
+
+  let state = loadState();
+  let catalog = null;       // { language, batches: [...] }
+  let currentBatch = null;  // batch obj seleccionado para la sesión
+
+  // ============================================================
+  //  DOM REFS
+  // ============================================================
   const screens = {
     home:    document.getElementById("home"),
     session: document.getElementById("session"),
     done:    document.getElementById("done")
   };
-  const cardText = document.getElementById("cardText");
-  const progress = document.getElementById("progress");
-  const btnStart = document.getElementById("btnStart");
-  const btnAgain = document.getElementById("btnAgain");
-  const btnReset = document.getElementById("btnReset");
+  const walletCount   = document.getElementById("walletCount");
+  const batchGrid     = document.getElementById("batchGrid");
+  const cardText      = document.getElementById("cardText");
+  const progress      = document.getElementById("progress");
+  const sessionTitle  = document.getElementById("sessionTitle");
+  const doneMsg       = document.getElementById("doneMsg");
+  const masteredBadge = document.getElementById("masteredBadge");
+  const btnAgain      = document.getElementById("btnAgain");
+  const btnReset      = document.getElementById("btnReset");
 
-  // --- Voz ---
+  // ============================================================
+  //  VOICE
+  // ============================================================
   let voice = null;
   function pickVoice() {
     const vs = speechSynthesis.getVoices();
@@ -394,6 +527,9 @@
     } catch (e) {}
   }
 
+  // ============================================================
+  //  UTIL
+  // ============================================================
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   function shuffle(a) {
     const r = a.slice();
@@ -403,12 +539,54 @@
     }
     return r;
   }
-
   function show(name) {
     for (const k of Object.keys(screens)) screens[k].classList.remove("active");
     screens[name].classList.add("active");
+    window.scrollTo(0, 0);
   }
 
+  // ============================================================
+  //  RENDER HOME
+  // ============================================================
+  function renderWallet() {
+    walletCount.textContent = state.coins;
+  }
+
+  function renderBatchGrid() {
+    if (!catalog) {
+      batchGrid.innerHTML = `<div class="loading">Cargando lotes…</div>`;
+      return;
+    }
+    batchGrid.innerHTML = "";
+    for (const b of catalog.batches) {
+      const done = sessionsForBatch(state, b.id);
+      const mastered = done >= SESSIONS_TO_MASTER;
+      const pct = Math.min(100, Math.round((done / SESSIONS_TO_MASTER) * 100));
+      const words = b.cards.map(c => c.text).join(" · ");
+
+      const tile = document.createElement("div");
+      tile.className = "batch-tile";
+      tile.dataset.mastered = mastered ? "true" : "false";
+      tile.dataset.batchId = b.id;
+      tile.innerHTML = `
+        <div class="tile-top">
+          <div class="tile-emoji">${BATCH_EMOJI[b.id] || "📘"}</div>
+          <div class="tile-badge">${mastered ? "✓ Dominado" : done + "/" + SESSIONS_TO_MASTER}</div>
+        </div>
+        <div class="tile-name">${b.name}</div>
+        <div class="tile-words">${words}</div>
+        <div class="tile-progress">
+          <div class="tile-progress-fill" style="width:${pct}%"></div>
+        </div>
+      `;
+      tile.addEventListener("click", () => startSession(b));
+      batchGrid.appendChild(tile);
+    }
+  }
+
+  // ============================================================
+  //  SESSION LOOP
+  // ============================================================
   function renderProgress(currentPass) {
     progress.innerHTML = "";
     for (let i = 0; i < PASSES; i++) {
@@ -421,13 +599,23 @@
   }
 
   let running = false;
-  async function runSession() {
+  async function startSession(batch) {
     if (running) return;
+    currentBatch = batch;
+    sessionTitle.textContent = batch.name;
+    await warmUpVoices();
+    try { speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch(e){}
+    runSession();
+  }
+
+  async function runSession() {
     running = true;
     show("session");
+
+    const words = currentBatch.cards.map(c => c.text);
     for (let pass = 0; pass < PASSES; pass++) {
       renderProgress(pass);
-      const order = shuffle(BATCH.cards);
+      const order = shuffle(words);
       for (const word of order) {
         cardText.textContent = word;
         speak(word);
@@ -439,6 +627,12 @@
     }
     renderProgress(PASSES);
     running = false;
+
+    const { justMastered } = completeSession(state, currentBatch.id);
+    renderWallet();
+
+    doneMsg.textContent = "¡" + currentBatch.name + " completado!";
+    masteredBadge.style.display = justMastered ? "inline-block" : "none";
     show("done");
     launchConfetti();
   }
@@ -457,23 +651,46 @@
     }
   }
 
-  btnStart.addEventListener("click", async () => {
-    btnStart.disabled = true;
-    await warmUpVoices();
-    try { speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch(e){}
-    btnStart.disabled = false;
-    runSession();
+  // ============================================================
+  //  HANDLERS
+  // ============================================================
+  btnAgain.addEventListener("click", () => {
+    renderBatchGrid();
+    renderWallet();
+    show("home");
   });
-
-  btnAgain.addEventListener("click", () => show("home"));
   btnReset.addEventListener("click", () => {
+    if (!confirm("¿Reiniciar todo el progreso? Se borrarán monedas y sesiones.")) return;
+    resetState();
+    state = loadState();
     speechSynthesis.cancel();
+    renderBatchGrid();
+    renderWallet();
     show("home");
   });
 
-  if ("speechSynthesis" in window) speechSynthesis.getVoices();
-  else document.getElementById("voiceHint").textContent =
-       "Este navegador no soporta síntesis de voz. El texto funcionará, el sonido no.";
+  // ============================================================
+  //  BOOT
+  // ============================================================
+  async function loadCatalog() {
+    try {
+      const res = await fetch("./content/batches.json", { cache: "no-cache" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      catalog = await res.json();
+    } catch (e) {
+      batchGrid.innerHTML = `<div class="loading">
+        No se pudo cargar el catálogo.<br>
+        Sirve la carpeta con un servidor HTTP (p. ej. <code>python3 -m http.server 8080</code>).
+      </div>`;
+    }
+  }
+
+  (async function boot() {
+    renderWallet();
+    await loadCatalog();
+    renderBatchGrid();
+    if ("speechSynthesis" in window) speechSynthesis.getVoices();
+  })();
 })();
 </script>
 </body>
