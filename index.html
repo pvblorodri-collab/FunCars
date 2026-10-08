@@ -360,6 +360,121 @@
 
   /* ====================  LOADING  ==================== */
   .loading { text-align: center; padding: 40px; color: var(--muted); font-weight: 500; }
+
+  /* ====================  TAB BAR  ==================== */
+  .tabbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0));
+    z-index: 50;
+    display: none;
+  }
+  body.show-tabs .tabbar { display: flex; }
+  body.show-tabs .screen.active { padding-bottom: 80px; }
+  .tabbar button {
+    background: transparent;
+    border: none;
+    padding: 6px 24px;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.78rem;
+  }
+  .tabbar button .ico { font-size: 1.5rem; line-height: 1; }
+  .tabbar button[aria-current="page"] {
+    color: var(--doman-red);
+    font-weight: 700;
+  }
+
+  /* ====================  WORDS SCREEN  ==================== */
+  #words .words-header {
+    text-align: center;
+    padding: 4px 20px 16px;
+  }
+  #words .words-count {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  #words .words-sub {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+  .words-group {
+    padding: 10px 20px 6px;
+  }
+  .words-group-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .words-group-head .emoji { font-size: 1.3rem; }
+  .words-group-head .name { font-weight: 700; font-size: 1.05rem; }
+  .words-group-head .state {
+    margin-left: auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+  }
+  .words-group-head .state[data-s="mastered"] {
+    background: var(--doman-red);
+    color: #fff;
+  }
+  .words-group .word-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+  }
+  .word-card {
+    background: #FFFDF7;
+    border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 16px;
+    padding: 18px 10px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--doman-red);
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.06);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    position: relative;
+  }
+  .word-card:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+  }
+  .word-card.speaking {
+    background: var(--doman-red);
+    color: #fff;
+    box-shadow: 0 4px 0 var(--doman-red-dark);
+  }
+  .word-empty {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--muted);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .word-empty .big-emoji { font-size: 3rem; display: block; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -407,6 +522,19 @@
   </div>
 </section>
 
+<!-- ====================  WORDS (MIS PALABRAS)  ==================== -->
+<section id="words" class="screen">
+  <div class="topbar">
+    <div class="brand"><span class="fun">Fun</span><span class="cars">Cars</span></div>
+    <div class="wallet"><span id="walletCountW">0</span> <span class="coin">🪙</span></div>
+  </div>
+  <div class="words-header">
+    <div class="words-count" id="wordsCount">0</div>
+    <div class="words-sub">palabras aprendidas</div>
+  </div>
+  <div id="wordsBody"></div>
+</section>
+
 <!-- ====================  SESSION  ==================== -->
 <section id="session" class="screen">
   <div class="session-inner">
@@ -431,6 +559,16 @@
     <button class="btn-ghost" id="btnReset">Reiniciar progreso</button>
   </div>
 </section>
+
+<!-- ====================  TAB BAR  ==================== -->
+<nav class="tabbar" aria-label="Navegación">
+  <button data-tab="home" aria-current="page">
+    <span class="ico">🏠</span><span>Inicio</span>
+  </button>
+  <button data-tab="words">
+    <span class="ico">📖</span><span>Palabras</span>
+  </button>
+</nav>
 
 <script>
 (() => {
@@ -541,11 +679,16 @@
   // ============================================================
   const screens = {
     home:    document.getElementById("home"),
+    words:   document.getElementById("words"),
     session: document.getElementById("session"),
     done:    document.getElementById("done")
   };
+  const SCREENS_WITH_TABS = new Set(["home", "words"]);
   const walletCount   = document.getElementById("walletCount");
+  const walletCountW  = document.getElementById("walletCountW");
   const batchGrid     = document.getElementById("batchGrid");
+  const wordsCount    = document.getElementById("wordsCount");
+  const wordsBody     = document.getElementById("wordsBody");
   const cardText      = document.getElementById("cardText");
   const progress      = document.getElementById("progress");
   const sessionTitle  = document.getElementById("sessionTitle");
@@ -603,7 +746,14 @@
     for (const k of Object.keys(screens)) screens[k].classList.remove("active");
     screens[name].classList.add("active");
     window.scrollTo(0, 0);
+    document.body.classList.toggle("show-tabs", SCREENS_WITH_TABS.has(name));
+    // Marcar la pestaña activa
+    document.querySelectorAll(".tabbar button").forEach(b => {
+      if (b.dataset.tab === name) b.setAttribute("aria-current", "page");
+      else b.removeAttribute("aria-current");
+    });
     if (name === "home") startHomeTicker(); else stopHomeTicker();
+    if (name === "words") renderWordsScreen();
   }
 
   // ============================================================
@@ -611,6 +761,67 @@
   // ============================================================
   function renderWallet() {
     walletCount.textContent = state.coins;
+    walletCountW.textContent = state.coins;
+  }
+
+  // ============================================================
+  //  RENDER WORDS SCREEN
+  // ============================================================
+  function renderWordsScreen() {
+    if (!catalog) {
+      wordsBody.innerHTML = `<div class="loading">Cargando…</div>`;
+      wordsCount.textContent = "0";
+      return;
+    }
+    // Un lote aporta sus palabras a "Mis palabras" cuando tiene ≥1 sesión.
+    const groups = catalog.batches
+      .map(b => ({ b, done: sessionsForBatch(state, b.id) }))
+      .filter(g => g.done > 0);
+
+    const totalWords = groups.reduce((acc, g) => acc + g.b.cards.length, 0);
+    wordsCount.textContent = totalWords;
+
+    if (groups.length === 0) {
+      wordsBody.innerHTML = `
+        <div class="word-empty">
+          <span class="big-emoji">📘</span>
+          Completa una sesión en <b>Inicio</b> para empezar a ver aquí las palabras aprendidas.
+        </div>`;
+      return;
+    }
+
+    wordsBody.innerHTML = "";
+    for (const { b, done } of groups) {
+      const mastered = done >= SESSIONS_TO_MASTER;
+      const stateLabel = mastered ? "Dominado" : "Aprendiendo " + done + "/" + SESSIONS_TO_MASTER;
+      const emoji = BATCH_EMOJI[b.id] || "📘";
+
+      const group = document.createElement("div");
+      group.className = "words-group";
+      group.innerHTML = `
+        <div class="words-group-head">
+          <span class="emoji">${emoji}</span>
+          <span class="name">${b.name}</span>
+          <span class="state" data-s="${mastered ? "mastered" : "learning"}">${stateLabel}</span>
+        </div>
+        <div class="word-grid"></div>
+      `;
+      const grid = group.querySelector(".word-grid");
+      for (const c of b.cards) {
+        const w = document.createElement("div");
+        w.className = "word-card";
+        w.textContent = c.text;
+        w.addEventListener("click", () => tapWord(w, c.text));
+        grid.appendChild(w);
+      }
+      wordsBody.appendChild(group);
+    }
+  }
+
+  function tapWord(el, text) {
+    speak(text);
+    el.classList.add("speaking");
+    setTimeout(() => el.classList.remove("speaking"), 600);
   }
 
   function renderBatchGrid() {
@@ -757,6 +968,14 @@
     renderWallet();
     show("home");
   });
+
+  document.querySelectorAll(".tabbar button").forEach(b => {
+    b.addEventListener("click", () => {
+      const target = b.dataset.tab;
+      if (target === "home") { renderBatchGrid(); renderWallet(); }
+      show(target);
+    });
+  });
   btnReset.addEventListener("click", () => {
     if (!confirm("¿Reiniciar todo el progreso? Se borrarán monedas y sesiones.")) return;
     resetState();
@@ -787,7 +1006,7 @@
     renderWallet();
     await loadCatalog();
     renderBatchGrid();
-    startHomeTicker();
+    show("home");
     if ("speechSynthesis" in window) speechSynthesis.getVoices();
   })();
 })();
