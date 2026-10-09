@@ -18,6 +18,10 @@
   :root {
     --doman-red: #D32F2F;        /* WCAG AA con blanco (4.6:1) */
     --doman-red-dark: #9B1C1F;
+    /* "Tapete" — fondo principal verde profundo tipo mesa de juego de cartas */
+    --felt-1: #0F3F3F;
+    --felt-2: #163939;
+    /* Cielo cálido (sol/nubes) ahora vive sólo dentro del hero-card */
     --sky-1: #FFE98A;
     --sky-2: #FFC46B;
     --sky-3: #FF8A5B;
@@ -25,8 +29,11 @@
     --road-stripe: #FFE066;
     --cream:  #FFF8EC;
     --ink:    #1E1E2A;
-    --muted:  #3B3B4F;           /* oscurecido para contraste sobre gradiente */
-    --muted-soft: #6b6b7a;       /* para texto sobre fondo blanco únicamente */
+    --muted:  #6b6b7a;           /* por defecto sobre bg claro (session/match/done) */
+    --muted-on-felt: #B9D5CC;    /* texto apagado sobre tapete oscuro */
+    /* Brand sobre felt */
+    --brand-fun:   #FFD54F;      /* amarillo cálido ~10:1 sobre felt */
+    --brand-cars:  #F5F5DC;      /* crema ~11:1 sobre felt */
     --accent-blue: #4FC3F7;
     --accent-green: #66BB6A;
     --accent-purple: #AB47BC;
@@ -48,9 +55,10 @@
     user-select: none;
   }
   body {
-    background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
+    background: linear-gradient(180deg, var(--felt-1) 0%, var(--felt-2) 100%);
     background-attachment: fixed;
     min-height: 100vh;
+    color: #FFFFFF;
   }
 
   .screen {
@@ -214,11 +222,10 @@
     letter-spacing: 0;
     line-height: 1;
   }
-  /* .fun pintado con rojo profundo (#B71C1C) porque la marca cae sobre
-     el gradiente naranja; sobre blanco #D32F2F sigue siendo el color
-     de marca (botones, texto Doman, tiles). */
-  .brand .fun  { color: #B71C1C; }
-  .brand .cars { color: var(--road); }
+  /* La marca pixel sobre tapete verde: amarillo sol + crema papel.
+     El rojo Doman sigue siendo el color de palabras/botones (sobre blanco). */
+  .brand .fun  { color: var(--brand-fun); }
+  .brand .cars { color: var(--brand-cars); }
   .wallet {
     background: #fff;
     border-radius: 999px;
@@ -235,17 +242,21 @@
   .wallet .coin { font-size: 1.2rem; transition: transform 0.5s var(--ease-pop); }
   .wallet.pulse .coin { transform: rotate(360deg) scale(1.2); }
 
-  /* ====================  HERO (quieto, acento no dominante)  ==================== */
+  /* ====================  HERO (ventana cálida sobre el tapete)  ==================== */
   .hero-wrap {
     text-align: center;
-    padding: 4px 20px 0;
+    padding: 8px 20px 4px;
   }
   .hero-wrap .scene {
     position: relative;
     width: 100%;
-    max-width: 360px;
-    height: 110px;
+    max-width: 380px;
+    height: 120px;
     margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4);
   }
   .hero-wrap .scene svg { width: 100%; height: 100%; display: block; }
   .hero-wrap .car-wrap {
@@ -383,16 +394,16 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(255,255,255,0.6);
-    backdrop-filter: blur(6px);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
     border-radius: 999px;
     padding: 6px 14px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--ink);
-    margin: 0 20px 4px;
+    color: var(--brand-cars);
+    margin: 10px 20px 4px;
   }
-  .active-counter.warn { background: #fff; color: var(--doman-red); }
+  .active-counter.warn { background: var(--brand-fun); color: var(--felt-1); border-color: transparent; }
   .cooldown-overlay {
     display: flex;
     align-items: center;
@@ -779,7 +790,7 @@
   }
 
   /* ====================  LOADING  ==================== */
-  .loading { text-align: center; padding: 40px; color: var(--muted); font-weight: 500; }
+  .loading { text-align: center; padding: 40px; color: var(--muted-on-felt); font-weight: 500; }
 
   /* ====================  TAB BAR (pastilla flotante)  ==================== */
   .tabbar {
@@ -841,14 +852,15 @@
     padding: 4px 20px 16px;
   }
   #words .words-count {
-    font-size: 2.6rem;
+    font-family: "Pixelify Sans", "Fredoka", sans-serif;
+    font-size: 3rem;
     font-weight: 700;
-    color: var(--ink);
-    letter-spacing: -0.02em;
+    color: var(--brand-fun);
+    letter-spacing: 0;
     line-height: 1;
   }
   #words .words-sub {
-    color: var(--muted);
+    color: var(--brand-cars);
     font-weight: 500;
     font-size: 0.95rem;
     margin-top: 4px;
@@ -863,14 +875,14 @@
     margin-bottom: 10px;
   }
   .words-group-head .emoji { font-size: 1.3rem; }
-  .words-group-head .name { font-weight: 700; font-size: 1.05rem; }
+  .words-group-head .name { font-weight: 700; font-size: 1.05rem; color: var(--brand-cars); }
   .words-group-head .state {
     margin-left: auto;
     font-size: 0.78rem;
     font-weight: 600;
     padding: 3px 10px;
     border-radius: 999px;
-    background: #fff;
+    background: rgba(255,255,255,0.9);
     color: var(--ink);
   }
   .words-group-head .state[data-s="mastered"] {
@@ -915,7 +927,7 @@
   .word-empty {
     text-align: center;
     padding: 40px 24px;
-    color: var(--muted);
+    color: var(--muted-on-felt);
     font-weight: 500;
     line-height: 1.5;
   }
