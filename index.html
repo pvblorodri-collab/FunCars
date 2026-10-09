@@ -505,8 +505,51 @@
 
   .active-counter-row {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
     padding: 12px 20px 0;
+  }
+  .share-btn {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(6px);
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+  }
+  .share-btn:active { transform: translateY(1px); }
+  .share-btn .share-ico { font-size: 1rem; }
+
+  /* Toast "Enlace copiado" */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 300;
+    transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px);
   }
   .active-counter {
     display: inline-flex;
@@ -1284,6 +1327,9 @@
   </div>
 
   <div class="active-counter-row">
+    <button class="share-btn" data-share-btn aria-label="Compartir FunCards">
+      <span class="share-ico">📤</span><span>Compartir</span>
+    </button>
     <div id="activeCounter" class="active-counter">0 de 2 lotes activos</div>
   </div>
   <div class="tree-wrap">
@@ -1376,6 +1422,9 @@
     <button class="big-btn" id="btnAgain">
       <span>🏁</span><span>Volver</span>
     </button>
+    <button class="share-btn" data-share-btn aria-label="Compartir FunCards" style="margin-top:4px;">
+      <span class="share-ico">📤</span><span>Compartir con otro padre</span>
+    </button>
     <button class="btn-ghost" id="btnReset">Reiniciar progreso</button>
   </div>
 </section>
@@ -1418,6 +1467,9 @@
     </div>
   </div>
 </section>
+
+<!-- ====================  TOAST  ==================== -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <!-- ====================  SOUND REMINDER  ==================== -->
 <div id="soundReminder" class="sound-reminder" role="dialog" aria-hidden="true">
@@ -1987,6 +2039,37 @@
   // Click en el chip de sonido abre el recordatorio sin gating
   document.querySelectorAll("[data-sound-chip]").forEach(el => {
     el.addEventListener("click", () => { sfx.tap(); openSoundReminder(); });
+  });
+
+  // Compartir
+  const toastEl = document.getElementById("toast");
+  let toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+  }
+  async function shareApp() {
+    sfx.tap(); haptic(10);
+    const url = window.location.origin + window.location.pathname;
+    const title = "FunCards";
+    const text = "Mira esta app para aprender a leer con el método Doman. Es gratis:";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        showToast("Enlace copiado ✓");
+      } else {
+        window.prompt("Copia este enlace para compartir:", url);
+      }
+    } catch (e) {
+      // Usuario canceló el share nativo: nada
+    }
+  }
+  document.querySelectorAll("[data-share-btn]").forEach(el => {
+    el.addEventListener("click", shareApp);
   });
 
   async function startSession(batch) {
