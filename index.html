@@ -1556,14 +1556,6 @@
       </div>
     </div>
 
-    <!-- Difficulty picker (parking, naval) -->
-    <div class="game-overlay" id="overlayDiff">
-      <h2>Elige dificultad</h2>
-      <div class="sub">Cada partida cuesta <b>1 🪙</b>.</div>
-      <div class="diff-row" id="diffRow"></div>
-      <button class="btn-ghost" id="btnDiffBack">Volver</button>
-    </div>
-
     <!-- Game over -->
     <div class="game-overlay" id="overlayOver">
       <div class="big-emoji" id="overEmoji">💥</div>
@@ -1698,7 +1690,7 @@
   //  STATE (localStorage)
   // ============================================================
   function newState() {
-    return { v: 1, coins: 0, sessions: [], active_batches: [] };
+    return { v: 1, coins: 0, sessions: [], active_batches: [], game_levels: {} };
   }
   function loadState() {
     try {
@@ -1707,8 +1699,19 @@
       const s = JSON.parse(raw);
       if (!s || s.v !== 1 || !Array.isArray(s.sessions)) return newState();
       if (!Array.isArray(s.active_batches)) s.active_batches = [];
+      if (!s.game_levels || typeof s.game_levels !== "object") s.game_levels = {};
       return s;
     } catch (e) { return newState(); }
+  }
+  function getGameLevel(gameId) {
+    return state.game_levels[gameId] || 1;
+  }
+  function advanceGameLevel(gameId, maxLevel) {
+    const cur = state.game_levels[gameId] || 1;
+    const next = Math.min(cur + 1, maxLevel || 3);
+    state.game_levels[gameId] = next;
+    saveState(state);
+    return { prev: cur, next, maxed: next === cur };
   }
   function isActive(s, batchId) {
     return s.active_batches.includes(batchId);
@@ -2524,10 +2527,7 @@
   const canvas       = document.getElementById("gameCanvas");
   const ctx          = canvas.getContext("2d");
   const overlayPicker= document.getElementById("overlayPicker");
-  const overlayDiff  = document.getElementById("overlayDiff");
   const overlayOver  = document.getElementById("overlayOver");
-  const diffRow      = document.getElementById("diffRow");
-  const btnDiffBack  = document.getElementById("btnDiffBack");
   const noCoinsHint  = document.getElementById("noCoinsHint");
   const gamePicker   = document.getElementById("gamePicker");
   const btnRetry     = document.getElementById("btnRetry");
@@ -2548,9 +2548,9 @@
   ];
   const GAMES_META = [
     { id: "runner",   name: "Runner",    emoji: "🏎️", desc: "Esquiva coches" },
-    { id: "parking",  name: "Parking",   emoji: "🅿️",  desc: "Recuerda dónde iban", difficulties: true },
-    { id: "naval",    name: "Hundir",    emoji: "🚢", desc: "Hunde la flota",      difficulties: true },
-    { id: "invasores",name: "Invasores", emoji: "👾", desc: "Dispara a los marcianos", difficulties: true },
+    { id: "parking",  name: "Parking",   emoji: "🅿️",  desc: "Recuerda dónde iban", levels: 3 },
+    { id: "naval",    name: "Hundir",    emoji: "🚢", desc: "Hunde la flota",      levels: 3 },
+    { id: "invasores",name: "Invasores", emoji: "👾", desc: "Dispara a los marcianos", levels: 3 },
     { id: "sopa",     name: "Sopa",      emoji: "🔤", desc: "Busca las palabras" }
   ];
   const GAMES = {}; // id -> { start, stop, onPointerDown }
@@ -2587,40 +2587,23 @@
       const b = document.createElement("button");
       b.className = "game-pick";
       b.disabled = !canPlay;
+      const levelBadge = g.levels
+        ? `<span class="pdesc">Nivel ${getGameLevel(g.id)} / ${g.levels}</span>`
+        : `<span class="pdesc">${g.desc}</span>`;
       b.innerHTML = `<span class="pico">${g.emoji}</span>
         <span class="pname">${g.name}</span>
-        <span class="pdesc">${g.desc}</span>`;
-      b.addEventListener("click", () => {
-        if (g.difficulties) openDifficultyFor(g.id);
-        else startGame(g.id);
-      });
+        ${levelBadge}`;
+      b.addEventListener("click", () => startGame(g.id));
       gamePicker.appendChild(b);
     }
   }
 
   function showOverlay(kind) {
     overlayPicker.classList.toggle("active", kind === "picker");
-    overlayDiff.classList.toggle("active",   kind === "diff");
     overlayOver.classList.toggle("active",   kind === "over");
   }
 
-  // Mapa de últimas dificultades por juego (para "Otra vida")
-  const lastDifficulty = {};
-
-  function openDifficultyFor(gameId) {
-    sfx.tap();
-    diffRow.innerHTML = "";
-    for (const d of DIFFS_META) {
-      const b = document.createElement("button");
-      b.className = "diff-btn";
-      b.innerHTML = `<span class="diff-emoji">${d.emoji}</span><span class="diff-name">${d.name}</span>`;
-      b.addEventListener("click", () => startGame(gameId, d.id));
-      diffRow.appendChild(b);
-    }
-    showOverlay("diff");
-  }
-
-  function startGame(gameId, difficulty) {
+  function startGame(gameId) {
     if (state.coins < 1) return;
     state.coins -= 1;
     saveState(state);
@@ -2628,12 +2611,14 @@
     gameWalletEl.textContent = state.coins;
     activeGameId = gameId;
     lastGameId   = gameId;
-    if (difficulty) lastDifficulty[gameId] = difficulty;
     showOverlay(null);
-    gameScoreEl.textContent = "0";
     sfx.start();
     haptic(20);
-    GAMES[gameId].start({ difficulty: difficulty || lastDifficulty[gameId] || "easy" });
+    const meta = GAMES_META.find(m => m.id === gameId);
+    const level = meta && meta.levels ? getGameLevel(gameId) : 1;
+    const difficulty = ["easy","med","hard"][Math.min(level, 3) - 1];
+    gameScoreEl.textContent = meta && meta.levels ? ("Nv " + level + " · 0") : "0";
+    GAMES[gameId].start({ difficulty, level, maxLevel: meta && meta.levels });
   }
 
   function stopActiveGame() {
@@ -2647,8 +2632,23 @@
     stopActiveGame();
     finalScoreEl.textContent = score;
     finalScoreUnit.textContent = unit || "";
+    // Si ganaste un juego con niveles, subir nivel y notificar visualmente
+    let levelUpMsg = "";
+    if (won && lastGameId) {
+      const meta = GAMES_META.find(m => m.id === lastGameId);
+      if (meta && meta.levels) {
+        const r = advanceGameLevel(lastGameId, meta.levels);
+        if (r.next > r.prev) {
+          levelUpMsg = "¡Nivel " + r.next + " desbloqueado!";
+        } else {
+          levelUpMsg = "¡Nivel máximo (" + meta.levels + ") completado!";
+        }
+      }
+    }
     overEmoji.textContent = won ? "🏆" : "💥";
-    overTitle.textContent = won ? "¡Lo lograste!" : "¡Se acabó!";
+    overTitle.textContent = won
+      ? (levelUpMsg || "¡Lo lograste!")
+      : "¡Se acabó!";
     gameWalletEl.textContent = state.coins;
     const disabled = state.coins < 1;
     btnRetry.disabled = disabled;
@@ -2682,9 +2682,8 @@
   btnRetry.addEventListener("click", () => {
     if (!lastGameId || state.coins < 1) return;
     stopActiveGame();
-    startGame(lastGameId, lastDifficulty[lastGameId]);
+    startGame(lastGameId);
   });
-  btnDiffBack.addEventListener("click", () => { sfx.tap(); enterGameScreen(); });
   btnOverBack.addEventListener("click", () => { stopActiveGame(); enterGameScreen(); });
   btnGameBack.addEventListener("click", () => { show("home"); });
 
