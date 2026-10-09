@@ -68,6 +68,8 @@
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.16s var(--ease-smooth), transform 0.16s var(--ease-smooth);
+    position: relative;
+    z-index: 1;          /* por encima de las sky-clouds */
   }
   .screen.active {
     display: block;
@@ -268,42 +270,93 @@
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
     transform-origin: center bottom;
   }
-  .float-cloud {
-    position: absolute;
-    pointer-events: none;
-    opacity: 0.9;
-  }
-  .float-cloud.c1 { left: 8%;  }
-  .float-cloud.c2 { left: 62%; }
+  /* Las nubes del hero-scene ya no se usan; sky-clouds vive a nivel body */
   @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50%      { transform: translateX(-50%) translateY(-6px); }
+    0%, 100% { transform: translateX(-50%) scale(0.75) translateY(0); }
+    50%      { transform: translateX(-50%) scale(0.75) translateY(-6px); }
   }
+
+  /* ====================  CLOUDS DRIFTING OVER FELT  ==================== */
+  .sky-clouds {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .sky-cloud { position: absolute; opacity: 0.14; }
+  .sky-cloud.sc1 { top:  8%; animation: drift-r  70s linear infinite; }
+  .sky-cloud.sc2 { top: 24%; animation: drift-l  95s linear infinite -20s; }
+  .sky-cloud.sc3 { top: 46%; animation: drift-r  85s linear infinite -40s; }
+  .sky-cloud.sc4 { top: 68%; animation: drift-l 100s linear infinite -10s; }
+  .sky-cloud.sc5 { top: 85%; animation: drift-r  78s linear infinite -55s; }
+  @keyframes drift-r {
+    from { transform: translateX(-25vw); }
+    to   { transform: translateX(125vw); }
+  }
+  @keyframes drift-l {
+    from { transform: translateX(125vw); }
+    to   { transform: translateX(-25vw); }
+  }
+  @media (prefers-reduced-motion: reduce) { .sky-cloud { animation: none !important; } }
   .road-stripes { animation: dash 1s linear infinite; }
   @keyframes dash {
     from { stroke-dashoffset: 0; }
     to   { stroke-dashoffset: -48; }
   }
 
-  /* ====================  BATCH GRID (flashcard stacks)  ==================== */
+  /* ====================  BATCH GRID (Árbol de la Vida)  ==================== */
+  .tree-wrap {
+    position: relative;
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 20px 14px 48px;
+  }
+  .tree-paths {
+    position: absolute;
+    inset: 20px 14px 48px;
+    width: calc(100% - 28px);
+    height: calc(100% - 68px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .tree-paths line {
+    stroke: var(--brand-cars);
+    stroke-opacity: 0.22;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+  }
   .batches {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 22px 18px;
-    padding: 18px 22px 48px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(7, auto);
+    gap: 14px 8px;
+    position: relative;
+    z-index: 1;
   }
+  /* 10 lotes = 10 sephirot. Posiciones del árbol clásico */
+  .batches .batch-tile:nth-child(1)  { grid-column: 2; grid-row: 1; } /* Keter */
+  .batches .batch-tile:nth-child(2)  { grid-column: 3; grid-row: 2; } /* Chokmá */
+  .batches .batch-tile:nth-child(3)  { grid-column: 1; grid-row: 2; } /* Biná */
+  .batches .batch-tile:nth-child(4)  { grid-column: 3; grid-row: 3; } /* Jesed */
+  .batches .batch-tile:nth-child(5)  { grid-column: 1; grid-row: 3; } /* Gevurá */
+  .batches .batch-tile:nth-child(6)  { grid-column: 2; grid-row: 4; } /* Tiferet */
+  .batches .batch-tile:nth-child(7)  { grid-column: 3; grid-row: 5; } /* Netzaj */
+  .batches .batch-tile:nth-child(8)  { grid-column: 1; grid-row: 5; } /* Hod */
+  .batches .batch-tile:nth-child(9)  { grid-column: 2; grid-row: 6; } /* Yesod */
+  .batches .batch-tile:nth-child(10) { grid-column: 2; grid-row: 7; } /* Maljut */
   .batch-tile {
     background: #FFFFFF;
     border-radius: 14px;
-    padding: 14px 12px 16px;
+    padding: 10px 8px 12px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     cursor: pointer;
     transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
-    box-shadow: 0 6px 0 rgba(0,0,0,0.09), 0 10px 24px rgba(176,25,28,0.06);
+    box-shadow: 0 5px 0 rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.18);
     position: relative;
-    min-height: 190px;
+    min-height: 128px;
     opacity: 0;
     transform: translateY(10px);
     animation: tileIn 0.32s var(--ease-out) forwards;
@@ -442,11 +495,11 @@
     justify-content: center;
     color: var(--doman-red);
     font-weight: 700;
-    font-size: clamp(1.6rem, 6.5vw, 2.5rem);
-    letter-spacing: -0.03em;
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    letter-spacing: -0.02em;
     line-height: 1;
     text-align: center;
-    padding: 6px 4px;
+    padding: 4px 2px;
     transition: transform 0.2s var(--ease-pop);
     overflow-wrap: break-word;
     text-wrap: balance;
@@ -456,10 +509,15 @@
   .batch-tile .tile-name {
     text-align: center;
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.68rem;
     color: var(--muted);
     letter-spacing: 0;
+    line-height: 1.15;
   }
+  .batch-tile .tile-badge { font-size: 0.68rem; padding: 2px 7px; }
+  .batch-tile .tile-badge-row { min-height: 16px; }
+  .batch-tile .tile-progress { height: 4px; }
+  .deactivate-btn { width: 22px; height: 22px; font-size: 0.8rem; top: 5px; right: 5px; }
   .batch-tile .tile-progress {
     margin-top: auto;
     height: 6px;
@@ -866,14 +924,18 @@
     margin-top: 4px;
   }
   .words-group {
-    padding: 10px 20px 6px;
+    padding: 14px 20px 6px;
+    max-width: 520px;
+    margin: 0 auto;
   }
   .words-group-head {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
   }
+  .words-group-head .state { margin-left: 0; }
   .words-group-head .emoji { font-size: 1.3rem; }
   .words-group-head .name { font-weight: 700; font-size: 1.05rem; color: var(--brand-cars); }
   .words-group-head .state {
@@ -890,10 +952,12 @@
     color: #fff;
   }
   .words-group .word-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
   }
+  .words-group .word-card { flex: 0 0 100px; }
   .word-card {
     background: #FFFDF7;
     border: 2px solid rgba(255,255,255,0.9);
@@ -932,6 +996,53 @@
     line-height: 1.5;
   }
   .word-empty .big-emoji { font-size: 3rem; display: block; margin-bottom: 8px; }
+
+  /* ====================  WORD POPUP (flashcard full-screen)  ==================== */
+  .word-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 24px;
+    background: rgba(10, 30, 30, 0.94);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+  }
+  .word-popup.open {
+    display: flex;
+    animation: popupFade 0.22s var(--ease-out);
+  }
+  @keyframes popupFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .word-popup .pop-emoji {
+    font-size: clamp(10rem, 48vw, 22rem);
+    line-height: 1;
+    animation: popPop 0.4s var(--ease-pop);
+  }
+  .word-popup .pop-word {
+    color: #FF6B6B;
+    font-weight: 700;
+    font-size: clamp(3.5rem, 18vw, 9rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    animation: popPop 0.45s 0.08s var(--ease-pop) both;
+  }
+  .word-popup .pop-hint {
+    color: var(--muted-on-felt);
+    font-size: 0.9rem;
+    opacity: 0.6;
+    font-weight: 500;
+  }
+  @keyframes popPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
 
   /* ====================  GAME  ==================== */
   #game { background: #1E1E2A; color: #fff; }
@@ -1060,6 +1171,15 @@
 </head>
 <body>
 
+<!-- ====================  CLOUDS DRIFTING OVER FELT  ==================== -->
+<div class="sky-clouds" aria-hidden="true">
+  <svg class="sky-cloud sc1" width="140" height="42" viewBox="0 0 140 42"><ellipse cx="70" cy="21" rx="68" ry="18" fill="#FFFFFF"/></svg>
+  <svg class="sky-cloud sc2" width="100" height="34" viewBox="0 0 100 34"><ellipse cx="50" cy="17" rx="48" ry="14" fill="#FFFFFF"/></svg>
+  <svg class="sky-cloud sc3" width="170" height="48" viewBox="0 0 170 48"><ellipse cx="85" cy="24" rx="82" ry="20" fill="#FFFFFF"/></svg>
+  <svg class="sky-cloud sc4" width="80"  height="28" viewBox="0 0 80 28"><ellipse cx="40" cy="14" rx="38" ry="12" fill="#FFFFFF"/></svg>
+  <svg class="sky-cloud sc5" width="120" height="38" viewBox="0 0 120 38"><ellipse cx="60" cy="19" rx="58" ry="16" fill="#FFFFFF"/></svg>
+</div>
+
 <!-- ====================  SPLASH (coin insert)  ==================== -->
 <div id="splash" aria-hidden="true">
   <div class="coin-machine">
@@ -1081,14 +1201,6 @@
 
   <div class="hero-wrap">
     <div class="scene" aria-hidden="true">
-      <svg class="float-cloud c1" width="80"  height="26" viewBox="0 0 80 26"
-           style="top:14%; left:0;">
-        <ellipse cx="40" cy="13" rx="38" ry="11" fill="#fff" opacity="0.85"/>
-      </svg>
-      <svg class="float-cloud c2" width="60"  height="22" viewBox="0 0 60 22"
-           style="top:30%; left:0;">
-        <ellipse cx="30" cy="11" rx="28" ry="9" fill="#fff" opacity="0.9"/>
-      </svg>
       <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
         <path d="M0,160 Q140,70 240,140 T420,120 L420,220 L0,220 Z" fill="#FFB380" opacity="0.4"/>
         <rect x="0" y="160" width="420" height="60" fill="#3B3B4F"/>
@@ -1116,8 +1228,41 @@
   </div>
 
   <div id="activeCounter" class="active-counter">0 de 2 lotes activos</div>
-  <div id="batchGrid" class="batches">
-    <div class="loading">Cargando lotes…</div>
+  <div class="tree-wrap">
+    <svg class="tree-paths" viewBox="0 0 300 820" preserveAspectRatio="none" aria-hidden="true">
+      <!-- Pilar derecho / Chokmá-Chesed-Netzaj -->
+      <line x1="250" y1="185" x2="250" y2="305"/>
+      <line x1="250" y1="305" x2="250" y2="545"/>
+      <!-- Pilar izquierdo / Biná-Gevurá-Hod -->
+      <line x1="50"  y1="185" x2="50"  y2="305"/>
+      <line x1="50"  y1="305" x2="50"  y2="545"/>
+      <!-- Pilar central / Keter-Tiferet-Yesod-Maljut -->
+      <line x1="150" y1="65"  x2="150" y2="425"/>
+      <line x1="150" y1="425" x2="150" y2="665"/>
+      <line x1="150" y1="665" x2="150" y2="785"/>
+      <!-- Travesaños horizontales -->
+      <line x1="50"  y1="185" x2="250" y2="185"/>
+      <line x1="50"  y1="305" x2="250" y2="305"/>
+      <line x1="50"  y1="545" x2="250" y2="545"/>
+      <!-- Keter a Chokmá y Biná -->
+      <line x1="150" y1="65"  x2="250" y2="185"/>
+      <line x1="150" y1="65"  x2="50"  y2="185"/>
+      <!-- Diagonales cruzadas en el centro -->
+      <line x1="50"  y1="185" x2="250" y2="305"/>
+      <line x1="250" y1="185" x2="50"  y2="305"/>
+      <!-- Jesed/Gevurá a Tiferet -->
+      <line x1="250" y1="305" x2="150" y2="425"/>
+      <line x1="50"  y1="305" x2="150" y2="425"/>
+      <!-- Tiferet a Netzaj/Hod -->
+      <line x1="150" y1="425" x2="250" y2="545"/>
+      <line x1="150" y1="425" x2="50"  y2="545"/>
+      <!-- Netzaj/Hod a Yesod -->
+      <line x1="250" y1="545" x2="150" y2="665"/>
+      <line x1="50"  y1="545" x2="150" y2="665"/>
+    </svg>
+    <div id="batchGrid" class="batches">
+      <div class="loading">Cargando lotes…</div>
+    </div>
   </div>
 </section>
 
@@ -1213,6 +1358,13 @@
     </div>
   </div>
 </section>
+
+<!-- ====================  WORD POPUP  ==================== -->
+<div id="wordPopup" class="word-popup" role="dialog" aria-hidden="true">
+  <div class="pop-emoji" id="popEmoji"></div>
+  <div class="pop-word" id="popWord"></div>
+  <div class="pop-hint">Toca para cerrar</div>
+</div>
 
 <!-- ====================  TAB BAR  ==================== -->
 <nav class="tabbar" aria-label="Navegación">
@@ -1415,6 +1567,9 @@
   const walletCountW  = document.getElementById("walletCountW");
   const batchGrid     = document.getElementById("batchGrid");
   const activeCounter = document.getElementById("activeCounter");
+  const wordPopup     = document.getElementById("wordPopup");
+  const popEmoji      = document.getElementById("popEmoji");
+  const popWord       = document.getElementById("popWord");
   const wordsCount    = document.getElementById("wordsCount");
   const wordsBody     = document.getElementById("wordsBody");
   const cardText      = document.getElementById("cardText");
@@ -1589,19 +1744,36 @@
         const w = document.createElement("div");
         w.className = "word-card";
         w.innerHTML = `<span class="wc-emoji">${c.emoji || ""}</span><span class="wc-text">${c.text}</span>`;
-        w.addEventListener("click", () => tapWord(w, c.text));
+        w.addEventListener("click", () => tapWord(w, c.text, c.emoji));
         grid.appendChild(w);
       }
       wordsBody.appendChild(group);
     }
   }
 
-  function tapWord(el, text) {
-    speak(text);
-    haptic(8);
+  function tapWord(el, text, emoji) {
+    openWordPopup(text, emoji);
     el.classList.add("speaking");
     setTimeout(() => el.classList.remove("speaking"), 600);
   }
+
+  function openWordPopup(text, emoji) {
+    popWord.textContent = text;
+    popEmoji.textContent = emoji || "";
+    wordPopup.classList.add("open");
+    wordPopup.setAttribute("aria-hidden", "false");
+    speak(text);
+    haptic(20);
+  }
+  function closeWordPopup() {
+    wordPopup.classList.remove("open");
+    wordPopup.setAttribute("aria-hidden", "true");
+    try { speechSynthesis.cancel(); } catch(e){}
+  }
+  wordPopup.addEventListener("click", closeWordPopup);
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && wordPopup.classList.contains("open")) closeWordPopup();
+  });
 
   function renderActiveCounter() {
     const n = activeCount(state);
