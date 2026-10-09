@@ -4,6 +4,7 @@
     {
       "id": "mi-mundo",
       "order": 1,
+      "level": 1,
       "name": "Mi mundo",
       "phase": "familiar_words",
       "text_color": "red",
@@ -18,6 +19,7 @@
     {
       "id": "mi-cuerpo",
       "order": 2,
+      "level": 1,
       "name": "Mi cuerpo",
       "phase": "familiar_words",
       "text_color": "red",
@@ -32,6 +34,7 @@
     {
       "id": "animales-cercanos",
       "order": 3,
+      "level": 1,
       "name": "Animales cercanos",
       "phase": "familiar_words",
       "text_color": "red",
@@ -46,6 +49,7 @@
     {
       "id": "animales-granja",
       "order": 4,
+      "level": 1,
       "name": "Animales de granja",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -60,6 +64,7 @@
     {
       "id": "comida",
       "order": 5,
+      "level": 1,
       "name": "Comida",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -74,6 +79,7 @@
     {
       "id": "naturaleza",
       "order": 6,
+      "level": 1,
       "name": "Naturaleza",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -88,6 +94,7 @@
     {
       "id": "objetos-casa",
       "order": 7,
+      "level": 1,
       "name": "Objetos de casa",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -102,6 +109,7 @@
     {
       "id": "colores",
       "order": 8,
+      "level": 1,
       "name": "Colores",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -116,6 +124,7 @@
     {
       "id": "afectos",
       "order": 9,
+      "level": 1,
       "name": "Afectos",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -130,6 +139,7 @@
     {
       "id": "acciones",
       "order": 10,
+      "level": 1,
       "name": "Acciones",
       "phase": "expanded_vocab",
       "text_color": "red",
@@ -139,6 +149,157 @@
         { "text": "dormir", "emoji": "😴", "order": 3 },
         { "text": "comer",  "emoji": "🍽️", "order": 4 },
         { "text": "jugar",  "emoji": "🧸", "order": 5 }
+      ]
+    },
+
+    {
+      "id": "naturaleza-dice",
+      "order": 11,
+      "level": 2,
+      "name": "La naturaleza",
+      "phase": "couplets",
+      "text_color": "red",
+      "cards": [
+        { "text": "sol grande",    "emoji": "☀️", "order": 1 },
+        { "text": "luna llena",    "emoji": "🌕", "order": 2 },
+        { "text": "nube blanca",   "emoji": "☁️", "order": 3 },
+        { "text": "flor roja",     "emoji": "🌹", "order": 4 },
+        { "text": "agua fría",     "emoji": "💧", "order": 5 }
+      ]
+    },
+    {
+      "id": "animales-hacen",
+      "order": 12,
+      "level": 2,
+      "name": "Los animales hacen",
+      "phase": "couplets",
+      "text_color": "red",
+      "cards": [
+        { "text": "perro corre", "emoji": "🐕", "order": 1 },
+        { "text": "gato duerme", "emoji": "😴", "order": 2 },
+        { "text": "pato nada",   "emoji": "🦆", "order": 3 },
+        { "text": "pez salta",   "emoji": "🐟", "order": 4 },
+        { "text": "oso come",    "emoji": "🐻", "order": 5 }
+      ]
+    },
+    {
+      "id": "comida-rica",
+      "order": 13,
+      "level": 2,
+      "name": "Comida rica",
+      "phase": "couplets",
+      "text_color": "red",
+      "cards": [
+        { "text": "pan duro",      "emoji": "🍞", "order": 1 },
+        { "text": "leche fría",    "emoji": "🥛", "order": 2 },
+        { "text": "uva dulce",     "emoji": "🍇", "order": 3 },
+        { "text": "queso rico",    "emoji": "🧀", "order": 4 },
+        { "text": "manzana roja",  "emoji": "🍎", "order": 5 }
+      ]
+    },
+    {
+      "id": "cuerpo-hace",
+      "order": 14,
+      "level": 2,
+      "name": "Mi cuerpo hace",
+      "phase": "couplets",
+      "text_color": "red",
+      "cards": [
+        { "text": "mano toca",   "emoji": "✋", "order": 1 },
+        { "text": "ojo mira",    "emoji": "👁️", "order": 2 },
+        { "text": "boca canta",  "emoji": "🎤", "order": 3 },
+        { "text": "pie salta",   "emoji": "🦶", "order": 4 },
+        { "text": "nariz huele", "emoji": "👃", "order": 5 }
+      ]
+    },
+    {
+      "id": "colores-mundo",
+      "order": 15,
+      "level": 2,
+      "name": "Colores del mundo",
+      "phase": "couplets",
+      "text_color": "red",
+      "cards": [
+        { "text": "cielo azul",      "emoji": "🌤️", "order": 1 },
+        { "text": "hierba verde",    "emoji": "🌱", "order": 2 },
+        { "text": "fuego rojo",      "emoji": "🔥", "order": 3 },
+        { "text": "limón amarillo",  "emoji": "🍋", "order": 4 },
+        { "text": "carbón negro",    "emoji": "⬛", "order": 5 }
+      ]
+    },
+    {
+      "id": "siento",
+      "order": 16,
+      "level": 2,
+      "name": "Siento",
+      "phase": "couplets",
+      "text_color": "red",
+      "cards": [
+        { "text": "risa fuerte",   "emoji": "😂", "order": 1 },
+        { "text": "abrazo cálido", "emoji": "🤗", "order": 2 },
+        { "text": "beso dulce",    "emoji": "😘", "order": 3 },
+        { "text": "amor grande",   "emoji": "❤️", "order": 4 },
+        { "text": "baile libre",   "emoji": "💃", "order": 5 }
+      ]
+    },
+    {
+      "id": "yo-hago",
+      "order": 17,
+      "level": 2,
+      "name": "Yo hago",
+      "phase": "short_phrases",
+      "text_color": "red",
+      "cards": [
+        { "text": "yo salto", "emoji": "🤸", "order": 1 },
+        { "text": "yo corro", "emoji": "🏃", "order": 2 },
+        { "text": "yo río",   "emoji": "😄", "order": 3 },
+        { "text": "yo juego", "emoji": "🧸", "order": 4 },
+        { "text": "yo canto", "emoji": "🎵", "order": 5 }
+      ]
+    },
+    {
+      "id": "pnl-soy",
+      "order": 18,
+      "level": 2,
+      "name": "Soy",
+      "phase": "pnl",
+      "text_color": "red",
+      "cards": [
+        { "text": "soy feliz",     "emoji": "😊", "order": 1 },
+        { "text": "soy fuerte",    "emoji": "💪", "order": 2 },
+        { "text": "soy valiente",  "emoji": "🦁", "order": 3 },
+        { "text": "soy capaz",     "emoji": "✨", "order": 4 },
+        { "text": "soy único",     "emoji": "⭐", "order": 5 }
+      ]
+    },
+    {
+      "id": "mundo-pasa",
+      "order": 19,
+      "level": 2,
+      "name": "El mundo pasa",
+      "phase": "short_phrases",
+      "text_color": "red",
+      "cards": [
+        { "text": "luna sale",   "emoji": "🌙", "order": 1 },
+        { "text": "viento sopla","emoji": "🌬️", "order": 2 },
+        { "text": "lluvia moja", "emoji": "🌧️", "order": 3 },
+        { "text": "nieve cae",   "emoji": "❄️", "order": 4 },
+        { "text": "árbol crece", "emoji": "🌳", "order": 5 }
+      ]
+    },
+    {
+      "id": "pnl-aprendo",
+      "order": 20,
+      "level": 2,
+      "name": "Aprendo",
+      "phase": "pnl",
+      "text_color": "red",
+      "cards": [
+        { "text": "aprendo rápido", "emoji": "⚡", "order": 1 },
+        { "text": "me gusta leer",  "emoji": "📚", "order": 2 },
+        { "text": "soy campeón",    "emoji": "🏆", "order": 3 },
+        { "text": "hoy sonrío",     "emoji": "😁", "order": 4 },
+        { "text": "tengo éxito",    "emoji": "🌟", "order": 5 }
       ]
     }
   ]

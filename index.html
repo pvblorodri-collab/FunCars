@@ -384,7 +384,35 @@
     position: relative;
     max-width: 520px;
     margin: 0 auto;
-    padding: 32px 20px 64px;
+    padding: 24px 20px 48px;
+  }
+  .level-head {
+    text-align: center;
+    font-family: "Pixelify Sans", "Fredoka", sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #B71C1C;
+    margin: 32px 0 8px;
+    letter-spacing: 0;
+  }
+  .level-head .lock { opacity: 0.65; margin-left: 6px; font-size: 1.2rem; }
+  .level-head .sub {
+    display: block;
+    font-family: "Fredoka", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    opacity: 0.65;
+    margin-top: 4px;
+    letter-spacing: 0;
+  }
+  .tree-wrap[data-locked="true"] .batch-tile {
+    opacity: 0.4;
+    pointer-events: none;
+    filter: grayscale(0.4);
+  }
+  .tree-wrap[data-locked="true"] .tree-paths line {
+    stroke-opacity: 0.1;
   }
   .tree-paths {
     position: absolute;
@@ -1332,41 +1360,60 @@
     </button>
     <div id="activeCounter" class="active-counter">0 de 2 lotes activos</div>
   </div>
-  <div class="tree-wrap">
+  <h3 class="level-head">Nivel 1 · Palabras <span class="sub">Reconoce la palabra sola</span></h3>
+  <div class="tree-wrap" data-level="1">
     <svg class="tree-paths" viewBox="0 0 300 820" preserveAspectRatio="none" aria-hidden="true">
-      <!-- Pilar derecho / Chokmá-Chesed-Netzaj -->
       <line x1="250" y1="185" x2="250" y2="305"/>
       <line x1="250" y1="305" x2="250" y2="545"/>
-      <!-- Pilar izquierdo / Biná-Gevurá-Hod -->
       <line x1="50"  y1="185" x2="50"  y2="305"/>
       <line x1="50"  y1="305" x2="50"  y2="545"/>
-      <!-- Pilar central / Keter-Tiferet-Yesod-Maljut -->
       <line x1="150" y1="65"  x2="150" y2="425"/>
       <line x1="150" y1="425" x2="150" y2="665"/>
       <line x1="150" y1="665" x2="150" y2="785"/>
-      <!-- Travesaños horizontales -->
       <line x1="50"  y1="185" x2="250" y2="185"/>
       <line x1="50"  y1="305" x2="250" y2="305"/>
       <line x1="50"  y1="545" x2="250" y2="545"/>
-      <!-- Keter a Chokmá y Biná -->
       <line x1="150" y1="65"  x2="250" y2="185"/>
       <line x1="150" y1="65"  x2="50"  y2="185"/>
-      <!-- Diagonales cruzadas en el centro -->
       <line x1="50"  y1="185" x2="250" y2="305"/>
       <line x1="250" y1="185" x2="50"  y2="305"/>
-      <!-- Jesed/Gevurá a Tiferet -->
       <line x1="250" y1="305" x2="150" y2="425"/>
       <line x1="50"  y1="305" x2="150" y2="425"/>
-      <!-- Tiferet a Netzaj/Hod -->
       <line x1="150" y1="425" x2="250" y2="545"/>
       <line x1="150" y1="425" x2="50"  y2="545"/>
-      <!-- Netzaj/Hod a Yesod -->
       <line x1="250" y1="545" x2="150" y2="665"/>
       <line x1="50"  y1="545" x2="150" y2="665"/>
     </svg>
-    <div id="batchGrid" class="batches">
+    <div id="batchGrid1" class="batches" data-level="1">
       <div class="loading">Cargando lotes…</div>
     </div>
+  </div>
+
+  <h3 class="level-head" id="level2Head">Nivel 2 · Parejas y frases <span class="lock">🔒</span><span class="sub">Se desbloquea al dominar los 10 primeros lotes</span></h3>
+  <div class="tree-wrap" data-level="2" data-locked="true">
+    <svg class="tree-paths" viewBox="0 0 300 820" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="250" y1="185" x2="250" y2="305"/>
+      <line x1="250" y1="305" x2="250" y2="545"/>
+      <line x1="50"  y1="185" x2="50"  y2="305"/>
+      <line x1="50"  y1="305" x2="50"  y2="545"/>
+      <line x1="150" y1="65"  x2="150" y2="425"/>
+      <line x1="150" y1="425" x2="150" y2="665"/>
+      <line x1="150" y1="665" x2="150" y2="785"/>
+      <line x1="50"  y1="185" x2="250" y2="185"/>
+      <line x1="50"  y1="305" x2="250" y2="305"/>
+      <line x1="50"  y1="545" x2="250" y2="545"/>
+      <line x1="150" y1="65"  x2="250" y2="185"/>
+      <line x1="150" y1="65"  x2="50"  y2="185"/>
+      <line x1="50"  y1="185" x2="250" y2="305"/>
+      <line x1="250" y1="185" x2="50"  y2="305"/>
+      <line x1="250" y1="305" x2="150" y2="425"/>
+      <line x1="50"  y1="305" x2="150" y2="425"/>
+      <line x1="150" y1="425" x2="250" y2="545"/>
+      <line x1="150" y1="425" x2="50"  y2="545"/>
+      <line x1="250" y1="545" x2="150" y2="665"/>
+      <line x1="50"  y1="545" x2="150" y2="665"/>
+    </svg>
+    <div id="batchGrid2" class="batches" data-level="2"></div>
   </div>
 </section>
 
@@ -1690,7 +1737,9 @@
   const SCREENS_WITH_TABS = new Set(["home", "words", "game"]);
   const walletCount   = document.getElementById("walletCount");
   const walletCountW  = document.getElementById("walletCountW");
-  const batchGrid     = document.getElementById("batchGrid");
+  const batchGrid1    = document.getElementById("batchGrid1");
+  const batchGrid2    = document.getElementById("batchGrid2");
+  const level2Head    = document.getElementById("level2Head");
   const activeCounter = document.getElementById("activeCounter");
   const wordPopup     = document.getElementById("wordPopup");
   const popEmoji      = document.getElementById("popEmoji");
@@ -1909,15 +1958,41 @@
     activeCounter.classList.toggle("warn", n === 0);
   }
 
+  function allLevel1Mastered() {
+    if (!catalog) return false;
+    for (const b of catalog.batches) {
+      const lv = b.level || 1;
+      if (lv !== 1) continue;
+      if (!isMastered(state, b.id)) return false;
+    }
+    return true;
+  }
+
   function renderBatchGrid() {
     if (!catalog) {
-      batchGrid.innerHTML = `<div class="loading">Cargando lotes…</div>`;
+      batchGrid1.innerHTML = `<div class="loading">Cargando lotes…</div>`;
+      batchGrid2.innerHTML = "";
       return;
     }
     renderActiveCounter();
+    const level2Unlocked = allLevel1Mastered();
+    const l2wrap = batchGrid2.parentElement;
+    if (l2wrap) l2wrap.dataset.locked = level2Unlocked ? "false" : "true";
+    const lockEl = level2Head.querySelector(".lock");
+    if (lockEl) lockEl.style.display = level2Unlocked ? "none" : "";
+    const subEl = level2Head.querySelector(".sub");
+    if (subEl) subEl.textContent = level2Unlocked
+      ? "Parejas de palabras y frases con PNL"
+      : "Se desbloquea al dominar los 10 primeros lotes";
+
     const now = Date.now();
-    batchGrid.innerHTML = "";
+    batchGrid1.innerHTML = "";
+    batchGrid2.innerHTML = "";
     for (const b of catalog.batches) {
+      const level = b.level || 1;
+      if (level === 2 && !level2Unlocked) {
+        // Pintar tile fantasma para que el árbol se dibuje con sus 10 nodos
+      }
       const done = sessionsForBatch(state, b.id);
       const pct  = Math.min(100, Math.round((done / SESSIONS_TO_MASTER) * 100));
       const headword = (b.cards[0] && b.cards[0].text) || b.name;
@@ -1969,6 +2044,7 @@
         tile.addEventListener("click", () => startSession(b));
       } else if (status === "inactive") {
         tile.addEventListener("click", () => {
+          if (level === 2 && !level2Unlocked) return;
           const ok = activateBatch(state, b.id);
           if (!ok) {
             alert("Ya tienes " + MAX_ACTIVE_BATCHES + " lotes activos. Desactiva uno (botón ✕) antes de activar otro.");
@@ -1977,7 +2053,7 @@
           renderBatchGrid();
         });
       }
-      batchGrid.appendChild(tile);
+      (level === 2 ? batchGrid2 : batchGrid1).appendChild(tile);
     }
   }
 
