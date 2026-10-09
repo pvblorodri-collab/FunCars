@@ -1397,10 +1397,11 @@
 <section id="home" class="screen active">
   <div class="topbar">
     <div style="display:flex; gap:8px; align-items:center;">
-      <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
-        <span class="sfx">🔊</span><span>Sonido</span>
+      <button class="sound-chip" data-sound-chip aria-label="Sound reminder">
+        <span class="sfx">🔊</span><span data-i18n="sound_label">Sonido</span>
       </button>
-      <button class="notif-chip" data-notif-chip aria-label="Activar avisos">🔔</button>
+      <button class="notif-chip" data-notif-chip aria-label="Enable notifications">🔔</button>
+      <button class="notif-chip" data-lang-chip aria-label="Change language" title="ES / EN">🌐</button>
     </div>
     <div class="wallet"><span id="walletCount">0</span> <span class="coin">🪙</span></div>
   </div>
@@ -1420,12 +1421,12 @@
   </div>
 
   <div class="active-counter-row">
-    <button class="share-btn" data-share-btn aria-label="Compartir FunCards">
-      <span class="share-ico">📤</span><span>Compartir</span>
+    <button class="share-btn" data-share-btn aria-label="Share FunCards">
+      <span class="share-ico">📤</span><span data-i18n="share_btn">Compartir</span>
     </button>
     <div id="activeCounter" class="active-counter">0 de 2 lotes activos</div>
   </div>
-  <h3 class="level-head">Nivel 1 · Palabras <span class="sub">Reconoce la palabra sola</span></h3>
+  <h3 class="level-head"><span data-i18n="level1_title">Nivel 1 · Palabras</span> <span class="sub" data-i18n="level1_sub">Reconoce la palabra sola</span></h3>
   <div class="tree-wrap" data-level="1">
     <svg class="tree-paths" viewBox="0 0 300 820" preserveAspectRatio="none" aria-hidden="true">
       <line x1="250" y1="185" x2="250" y2="305"/>
@@ -1454,7 +1455,7 @@
     </div>
   </div>
 
-  <h3 class="level-head" id="level2Head">Nivel 2 · Parejas y frases <span class="lock">🔒</span><span class="sub">Se desbloquea al dominar los 10 primeros lotes</span></h3>
+  <h3 class="level-head" id="level2Head"><span data-i18n="level2_title">Nivel 2 · Frases</span> <span class="lock">🔒</span><span class="sub" data-i18n="locked_level2">Se desbloquea al dominar los 10 primeros lotes</span></h3>
   <div class="tree-wrap" data-level="2" data-locked="true">
     <svg class="tree-paths" viewBox="0 0 300 820" preserveAspectRatio="none" aria-hidden="true">
       <line x1="250" y1="185" x2="250" y2="305"/>
@@ -1486,16 +1487,17 @@
 <section id="words" class="screen">
   <div class="topbar">
     <div style="display:flex; gap:8px; align-items:center;">
-      <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
-        <span class="sfx">🔊</span><span>Sonido</span>
+      <button class="sound-chip" data-sound-chip aria-label="Sound reminder">
+        <span class="sfx">🔊</span><span data-i18n="sound_label">Sonido</span>
       </button>
-      <button class="notif-chip" data-notif-chip aria-label="Activar avisos">🔔</button>
+      <button class="notif-chip" data-notif-chip aria-label="Enable notifications">🔔</button>
+      <button class="notif-chip" data-lang-chip aria-label="Change language" title="ES / EN">🌐</button>
     </div>
     <div class="wallet"><span id="walletCountW">0</span> <span class="coin">🪙</span></div>
   </div>
   <div class="words-header">
     <div class="words-count" id="wordsCount">0</div>
-    <div class="words-sub">palabras aprendidas</div>
+    <div class="words-sub" data-i18n="words_learned">palabras aprendidas</div>
   </div>
   <div id="wordsBody"></div>
 </section>
@@ -1514,13 +1516,13 @@
 <section id="match" class="screen">
   <div class="match-inner">
     <div class="match-progress" id="matchProgress"></div>
-    <div class="match-prompt" id="matchPrompt">¿Qué palabra es?</div>
+    <div class="match-prompt" id="matchPrompt" data-i18n="match_prompt">¿Qué palabra es?</div>
     <div class="match-emoji" id="matchEmoji">🙂</div>
     <div class="match-options" id="matchOptions"></div>
     <div class="match-result" id="matchResult">
       <div class="big-emoji" id="matchResultEmoji">✨</div>
       <div class="score-line" id="matchResultScore">5 de 5</div>
-      <div class="sub">a la primera</div>
+      <div class="sub" data-i18n="first_try">a la primera</div>
     </div>
   </div>
 </section>
@@ -1531,16 +1533,16 @@
     <div class="trophy">🏆</div>
     <div class="msg" id="doneMsg">¡Lo has conseguido!</div>
     <div class="reward">+3 <span class="coin">🪙</span></div>
-    <div id="masteredBadge" class="mastered-badge" style="display:none;">
+    <div id="masteredBadge" class="mastered-badge" style="display:none;" data-i18n="mastered_badge">
       🎖️ ¡Lote completado!
     </div>
     <button class="big-btn" id="btnAgain">
-      <span>🏁</span><span>Volver</span>
+      <span>🏁</span><span data-i18n="back_home">Volver</span>
     </button>
-    <button class="share-btn" data-share-btn aria-label="Compartir FunCards" style="margin-top:4px;">
-      <span class="share-ico">📤</span><span>Compartir con otro padre</span>
+    <button class="share-btn" data-share-btn aria-label="Share FunCards" style="margin-top:4px;">
+      <span class="share-ico">📤</span><span data-i18n="share_with">Compartir con otro padre</span>
     </button>
-    <button class="btn-ghost" id="btnReset">Reiniciar progreso</button>
+    <button class="btn-ghost" id="btnReset" data-i18n="reset_btn">Reiniciar progreso</button>
   </div>
 </section>
 
@@ -1561,10 +1563,10 @@
 
     <!-- Picker -->
     <div class="game-overlay active" id="overlayPicker">
-      <h2>Elige juego</h2>
-      <div class="sub">Cada partida cuesta <b>1 🪙</b>.</div>
+      <h2 data-i18n="pick_game">Elige juego</h2>
+      <div class="sub"><span data-i18n="cost_per_play">Cada partida cuesta </span><b>1 🪙</b>.</div>
       <div class="game-picker" id="gamePicker"></div>
-      <div class="sub" id="noCoinsHint" style="display:none;">
+      <div class="sub" id="noCoinsHint" style="display:none;" data-i18n="no_coins_hint">
         No tienes monedas. Lee una sesión para conseguir vidas.
       </div>
     </div>
@@ -1576,9 +1578,9 @@
       <div class="score-badge"><span id="finalScore">0</span> <span id="finalScoreUnit">m</span></div>
       <div class="btn-row">
         <button class="big-btn" id="btnRetry">
-          <span>🏁</span><span>Otra vida (1 🪙)</span>
+          <span>🏁</span><span data-i18n="retry_cost">Otra vida (1 🪙)</span>
         </button>
-        <button class="btn-ghost" id="btnOverBack">Elegir juego</button>
+        <button class="btn-ghost" id="btnOverBack" data-i18n="pick_game">Elegir juego</button>
       </div>
     </div>
   </div>
@@ -1590,33 +1592,47 @@
 <!-- ====================  SOUND REMINDER  ==================== -->
 <div id="soundReminder" class="sound-reminder" role="dialog" aria-hidden="true">
   <div class="big-sfx">🔊</div>
-  <h2>Sube el volumen</h2>
-  <div class="lead">
+  <h2 data-i18n="sound_title">Sube el volumen</h2>
+  <div class="lead" data-i18n="sound_body">
     Cada palabra se pronuncia en voz alta.<br>
     Comprueba que el móvil no está en silencio.
   </div>
   <button class="big-btn" id="btnSoundOk">
-    <span>✓</span><span>Entendido</span>
+    <span>✓</span><span data-i18n="got_it">Entendido</span>
   </button>
+</div>
+
+<!-- ====================  LANG PICKER  ==================== -->
+<div id="langPicker" class="sound-reminder" role="dialog" aria-hidden="true" style="display:none;">
+  <div class="big-sfx">🌐</div>
+  <h2>Elige idioma<br><small style="font-size:0.6em; opacity:.7;">Choose language</small></h2>
+  <div class="btn-row" style="display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px;">
+    <button class="big-btn" data-pick-lang="es">
+      <span>🇪🇸</span><span>Español</span>
+    </button>
+    <button class="big-btn" data-pick-lang="en">
+      <span>🇬🇧</span><span>English</span>
+    </button>
+  </div>
 </div>
 
 <!-- ====================  WORD POPUP  ==================== -->
 <div id="wordPopup" class="word-popup" role="dialog" aria-hidden="true">
   <div class="pop-emoji" id="popEmoji"></div>
   <div class="pop-word" id="popWord"></div>
-  <div class="pop-hint">Toca para cerrar</div>
+  <div class="pop-hint" data-i18n="tap_to_close">Toca para cerrar</div>
 </div>
 
 <!-- ====================  TAB BAR  ==================== -->
-<nav class="tabbar" aria-label="Navegación">
+<nav class="tabbar" aria-label="Navigation">
   <button data-tab="home" aria-current="page">
-    <span class="ico">🏠</span><span>Inicio</span>
+    <span class="ico">🏠</span><span data-i18n="tab_home">Inicio</span>
   </button>
   <button data-tab="words">
-    <span class="ico">📖</span><span>Palabras</span>
+    <span class="ico">📖</span><span data-i18n="tab_words">Palabras</span>
   </button>
   <button data-tab="game">
-    <span class="ico">🎮</span><span>Juego</span>
+    <span class="ico">🎮</span><span data-i18n="tab_game">Juego</span>
   </button>
 </nav>
 
@@ -1703,7 +1719,7 @@
   //  STATE (localStorage)
   // ============================================================
   function newState() {
-    return { v: 1, coins: 0, sessions: [], active_batches: [], game_levels: {} };
+    return { v: 1, coins: 0, sessions: [], active_batches: [], game_levels: {}, lang: null };
   }
   function loadState() {
     try {
@@ -1713,8 +1729,193 @@
       if (!s || s.v !== 1 || !Array.isArray(s.sessions)) return newState();
       if (!Array.isArray(s.active_batches)) s.active_batches = [];
       if (!s.game_levels || typeof s.game_levels !== "object") s.game_levels = {};
+      if (s.lang !== "es" && s.lang !== "en") s.lang = null;
       return s;
     } catch (e) { return newState(); }
+  }
+
+  // ============================================================
+  //  i18n
+  // ============================================================
+  const L = {
+    es: {
+      app_name: "FunCards",
+      tagline: "Aprende a leer",
+      tab_home: "Inicio", tab_words: "Palabras", tab_game: "Juego",
+      sound_label: "Sonido",
+      hello: "¡Hola!",
+      coins_label: "monedas",
+      active_batches_label: "lotes activos",
+      pick_batch: "Elige un lote",
+      locked_level2: "Completa los lotes del nivel 1 para desbloquear",
+      level1_title: "Nivel 1 · Palabras",
+      level1_sub: "Reconoce la palabra sola",
+      level2_title: "Nivel 2 · Frases",
+      sessions_x_of_y: (a,b) => a + " de " + b + " sesiones",
+      mastered_tag: "Dominado",
+      cooldown_prefix: "Vuelve en ",
+      activate: "Activar",
+      deactivate: "Desactivar",
+      activated_full: "Ya tienes el máximo de lotes activos.",
+      confirm_deactivate: name => '¿Desactivar "' + name + '"? Su progreso se conserva.',
+      start_session: "Empezar sesión",
+      pass_of: (n,t) => "Pase " + n + " de " + t,
+      session_done_title: "¡Sesión completa!",
+      session_done_msg: name => "¡" + name + " completado!",
+      coins_won: n => "+" + n + " monedas",
+      mastered_badge: "¡Lote dominado!",
+      play_now: "Jugar ahora",
+      back_home: "Volver",
+      again: "Otra vez",
+      match_title: "Une la palabra",
+      match_prompt: "¿Cuál es?",
+      match_done: "¡Bien!",
+      match_tryagain: "Casi, prueba otra vez",
+      match_score: (ok,tot) => "Acertaste " + ok + " de " + tot,
+      continue_: "Continuar",
+      words_screen: "Mis palabras",
+      words_empty: "Todavía no has visto palabras. Haz una sesión primero.",
+      pick_game: "Elige juego",
+      cost_per_play: "Cada partida cuesta ",
+      no_coins_hint: "No tienes monedas. Lee una sesión para conseguir vidas.",
+      three_levels: "3 niveles",
+      level_up: n => "¡Nivel " + n + "!",
+      three_levels_done: "¡Los 3 niveles!",
+      you_did_it: "¡Lo lograste!",
+      game_over: "¡Se acabó!",
+      retry: "Otra vida",
+      exit_game: "Salir",
+      sound_on_q: "¿Está el sonido del móvil encendido? Lo necesitamos para escuchar las palabras.",
+      got_it: "Entendido",
+      share_title: "Comparte FunCards",
+      share_text: "Mira esta app para enseñar a leer a los peques:",
+      share_btn: "Compartir",
+      copied: "Enlace copiado ✓",
+      notifications_ask: "Avisarme cuando pueda leer",
+      notifications_on: "Avisos activados ✓",
+      notifications_already: "Avisos ya activados ✓",
+      notifications_blocked: "Avisos bloqueados en el navegador",
+      notifications_no: "Avisos no activados",
+      notifications_unsupported: "Tu navegador no soporta avisos",
+      reset_confirm: "¿Borrar todo el progreso?",
+      reset_btn: "Borrar progreso",
+      change_lang: "Idioma",
+      lang_label_es: "Español",
+      lang_label_en: "English",
+      pick_lang_title: "Elige idioma",
+      pick_lang_sub: "Choose language",
+      words_learned: "palabras aprendidas",
+      first_try: "a la primera",
+      share_with: "Compartir con otro padre",
+      sound_title: "Sube el volumen",
+      sound_body: "Cada palabra se pronuncia en voz alta.<br>Comprueba que el móvil no está en silencio.",
+      tap_to_close: "Toca para cerrar",
+      retry_cost: "Otra vida (1 🪙)"
+    },
+    en: {
+      app_name: "FunCards",
+      tagline: "Learn to read",
+      tab_home: "Home", tab_words: "Words", tab_game: "Play",
+      sound_label: "Sound",
+      hello: "Hi!",
+      coins_label: "coins",
+      active_batches_label: "active sets",
+      pick_batch: "Pick a set",
+      locked_level2: "Finish level 1 sets to unlock",
+      level1_title: "Level 1 · Words",
+      level1_sub: "Recognize single words",
+      level2_title: "Level 2 · Phrases",
+      sessions_x_of_y: (a,b) => a + " of " + b + " sessions",
+      mastered_tag: "Mastered",
+      cooldown_prefix: "Back in ",
+      activate: "Activate",
+      deactivate: "Deactivate",
+      activated_full: "You already have the max active sets.",
+      confirm_deactivate: name => 'Deactivate "' + name + '"? Progress is kept.',
+      start_session: "Start session",
+      pass_of: (n,t) => "Pass " + n + " of " + t,
+      session_done_title: "Session done!",
+      session_done_msg: name => name + " done!",
+      coins_won: n => "+" + n + " coins",
+      mastered_badge: "Set mastered!",
+      play_now: "Play now",
+      back_home: "Back",
+      again: "Again",
+      match_title: "Match the word",
+      match_prompt: "Which one?",
+      match_done: "Great!",
+      match_tryagain: "Almost, try again",
+      match_score: (ok,tot) => "You got " + ok + " of " + tot,
+      continue_: "Continue",
+      words_screen: "My words",
+      words_empty: "No words yet. Do a session first.",
+      pick_game: "Pick a game",
+      cost_per_play: "Each play costs ",
+      no_coins_hint: "No coins. Read a session to earn lives.",
+      three_levels: "3 levels",
+      level_up: n => "Level " + n + "!",
+      three_levels_done: "All 3 levels!",
+      you_did_it: "You did it!",
+      game_over: "Game over!",
+      retry: "Try again",
+      exit_game: "Exit",
+      sound_on_q: "Is the phone sound on? We need it to hear the words.",
+      got_it: "Got it",
+      share_title: "Share FunCards",
+      share_text: "Check this app to teach kids to read:",
+      share_btn: "Share",
+      copied: "Link copied ✓",
+      notifications_ask: "Notify me when I can read",
+      notifications_on: "Notifications on ✓",
+      notifications_already: "Notifications already on ✓",
+      notifications_blocked: "Notifications blocked in browser",
+      notifications_no: "Notifications off",
+      notifications_unsupported: "Your browser does not support notifications",
+      reset_confirm: "Delete all progress?",
+      reset_btn: "Reset progress",
+      change_lang: "Language",
+      lang_label_es: "Español",
+      lang_label_en: "English",
+      pick_lang_title: "Choose language",
+      pick_lang_sub: "Elige idioma",
+      words_learned: "words learned",
+      first_try: "on the first try",
+      share_with: "Share with another parent",
+      sound_title: "Turn up the volume",
+      sound_body: "Every word is spoken aloud.<br>Make sure the phone is not on silent.",
+      tap_to_close: "Tap to close",
+      retry_cost: "Another life (1 🪙)"
+    }
+  };
+  function getLang() { return (state.lang === "en") ? "en" : "es"; }
+  function t(key, ...args) {
+    const dict = L[getLang()] || L.es;
+    const v = dict[key];
+    if (typeof v === "function") return v(...args);
+    if (typeof v === "string") return v;
+    return key;
+  }
+  function wordOf(c) { return getLang() === "en" ? (c.text_en || c.text) : c.text; }
+  function batchName(b) { return getLang() === "en" ? (b.name_en || b.name) : b.name; }
+  function setLang(lang) {
+    state.lang = (lang === "en") ? "en" : "es";
+    saveState(state);
+    document.documentElement.lang = state.lang;
+    voice = pickVoice();
+    applyStaticI18n();
+    try { renderBatchGrid(); renderWallet(); } catch(e){}
+    try { if (document.getElementById("words").classList.contains("active")) renderWordsScreen(); } catch(e){}
+  }
+  function applyStaticI18n() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const v = t(el.getAttribute("data-i18n"));
+      if (v.includes("<br>") || v.includes("<b>")) el.innerHTML = v;
+      else el.textContent = v;
+    });
+    document.querySelectorAll("[data-i18n-attr]").forEach(el => {
+      const [attr, key] = el.getAttribute("data-i18n-attr").split(":");
+      el.setAttribute(attr, t(key));
+    });
   }
   function getGameLevel(gameId) {
     return state.game_levels[gameId] || 1;
@@ -1843,12 +2044,15 @@
   // ============================================================
   let voice = null;
   function pickVoice() {
+    if (!("speechSynthesis" in window)) return null;
     const vs = speechSynthesis.getVoices();
     if (!vs.length) return null;
+    const lang = (typeof state !== "undefined" && state && state.lang === "en") ? "en" : "es";
+    const primary = lang === "en" ? "en-US" : "es-ES";
     const prefs = [
-      v => v.lang === "es-ES" && !v.localService,
-      v => v.lang === "es-ES",
-      v => v.lang.startsWith("es"),
+      v => v.lang === primary && !v.localService,
+      v => v.lang === primary,
+      v => v.lang.startsWith(lang),
       v => true
     ];
     for (const p of prefs) { const v = vs.find(p); if (v) return v; }
@@ -1871,7 +2075,7 @@
       setTimeout(() => {
         try {
           const u = new SpeechSynthesisUtterance(text);
-          u.lang = "es-ES";
+          u.lang = getLang() === "en" ? "en-US" : "es-ES";
           u.rate = 1.0;
           u.pitch = 1.0;
           if (voice) u.voice = voice;
@@ -1983,7 +2187,7 @@
     wordsBody.innerHTML = "";
     for (const { b, done } of groups) {
       const mastered = done >= SESSIONS_TO_MASTER;
-      const stateLabel = mastered ? "Dominado" : "Aprendiendo " + done + "/" + SESSIONS_TO_MASTER;
+      const stateLabel = mastered ? t("mastered_tag") : (getLang()==="en" ? "Learning " : "Aprendiendo ") + done + "/" + SESSIONS_TO_MASTER;
       const emoji = BATCH_EMOJI[b.id] || "📘";
 
       const group = document.createElement("div");
@@ -1991,7 +2195,7 @@
       group.innerHTML = `
         <div class="words-group-head">
           <span class="emoji">${emoji}</span>
-          <span class="name">${b.name}</span>
+          <span class="name">${batchName(b)}</span>
           <span class="state" data-s="${mastered ? "mastered" : "learning"}">${stateLabel}</span>
         </div>
         <div class="word-grid"></div>
@@ -2000,8 +2204,9 @@
       for (const c of b.cards) {
         const w = document.createElement("div");
         w.className = "word-card";
-        w.innerHTML = `<span class="wc-emoji">${c.emoji || ""}</span><span class="wc-text">${c.text}</span>`;
-        w.addEventListener("click", () => tapWord(w, c.text, c.emoji));
+        const wtext = wordOf(c);
+        w.innerHTML = `<span class="wc-emoji">${c.emoji || ""}</span><span class="wc-text">${wtext}</span>`;
+        w.addEventListener("click", () => tapWord(w, wtext, c.emoji));
         grid.appendChild(w);
       }
       wordsBody.appendChild(group);
@@ -2034,7 +2239,9 @@
 
   function renderActiveCounter() {
     const n = activeCount(state);
-    activeCounter.textContent = n + " de " + MAX_ACTIVE_BATCHES + " lotes activos";
+    activeCounter.textContent = getLang()==="en"
+      ? n + " of " + MAX_ACTIVE_BATCHES + " active sets"
+      : n + " de " + MAX_ACTIVE_BATCHES + " lotes activos";
     activeCounter.classList.toggle("warn", n === 0);
   }
 
@@ -2050,7 +2257,7 @@
 
   function renderBatchGrid() {
     if (!catalog) {
-      batchGrid1.innerHTML = `<div class="loading">Cargando lotes…</div>`;
+      batchGrid1.innerHTML = `<div class="loading">${getLang()==="en" ? "Loading sets…" : "Cargando lotes…"}</div>`;
       batchGrid2.innerHTML = "";
       return;
     }
@@ -2062,8 +2269,8 @@
     if (lockEl) lockEl.style.display = level2Unlocked ? "none" : "";
     const subEl = level2Head.querySelector(".sub");
     if (subEl) subEl.textContent = level2Unlocked
-      ? "Parejas de palabras y frases con PNL"
-      : "Se desbloquea al dominar los 10 primeros lotes";
+      ? (getLang()==="en" ? "Word pairs and NLP phrases" : "Parejas de palabras y frases con PNL")
+      : t("locked_level2");
 
     const now = Date.now();
     batchGrid1.innerHTML = "";
@@ -2075,22 +2282,22 @@
       }
       const done = sessionsForBatch(state, b.id);
       const pct  = Math.min(100, Math.round((done / SESSIONS_TO_MASTER) * 100));
-      const headword = (b.cards[0] && b.cards[0].text) || b.name;
+      const headword = (b.cards[0] && wordOf(b.cards[0])) || batchName(b);
       const status = batchStatus(state, b.id, now);
       const remaining = cooldownRemainingMs(state, b.id, now);
 
       let badge, extra = "", corner = "";
       if (status === "mastered") {
-        badge = "✓ Dominado";
+        badge = "✓ " + t("mastered_tag");
       } else if (status === "cooldown") {
         badge = done + "/" + SESSIONS_TO_MASTER;
         extra = `<div class="cooldown-overlay"><span class="clock">⏱</span> ${formatRemaining(remaining)}</div>`;
-        corner = `<button class="deactivate-btn" data-deactivate aria-label="Desactivar">✕</button>`;
+        corner = `<button class="deactivate-btn" data-deactivate aria-label="${t("deactivate")}">✕</button>`;
       } else if (status === "available") {
         badge = done + "/" + SESSIONS_TO_MASTER;
-        corner = `<button class="deactivate-btn" data-deactivate aria-label="Desactivar">✕</button>`;
+        corner = `<button class="deactivate-btn" data-deactivate aria-label="${t("deactivate")}">✕</button>`;
       } else { // inactive
-        badge = `<span class="activate-chip">➕ Activar</span>`;
+        badge = `<span class="activate-chip">➕ ${t("activate")}</span>`;
       }
 
       const tile = document.createElement("div");
@@ -2101,7 +2308,7 @@
         ${corner}
         <div class="tile-badge-row"><div class="tile-badge">${badge}</div></div>
         <div class="tile-headword">${headword}</div>
-        <div class="tile-name">${b.name}</div>
+        <div class="tile-name">${batchName(b)}</div>
         ${extra}
         <div class="tile-progress">
           <div class="tile-progress-fill" style="width:${pct}%"></div>
@@ -2113,7 +2320,7 @@
       if (deactBtn) {
         deactBtn.addEventListener("click", ev => {
           ev.stopPropagation();
-          if (!confirm("¿Desactivar \"" + b.name + "\"? Su progreso se conserva y puedes reactivarlo cuando quieras.")) return;
+          if (!confirm(t("confirm_deactivate", batchName(b)))) return;
           deactivateBatch(state, b.id);
           renderBatchGrid();
         });
@@ -2127,7 +2334,7 @@
           if (level === 2 && !level2Unlocked) return;
           const ok = activateBatch(state, b.id);
           if (!ok) {
-            alert("Ya tienes " + MAX_ACTIVE_BATCHES + " lotes activos. Desactiva uno (botón ✕) antes de activar otro.");
+            alert(t("activated_full"));
             return;
           }
           renderBatchGrid();
@@ -2211,16 +2418,16 @@
   async function toggleNotifications() {
     sfx.tap();
     if (typeof Notification === "undefined") {
-      showToast("Tu navegador no soporta avisos");
+      showToast(t("notifications_unsupported"));
       return;
     }
     const perm = Notification.permission;
     if (perm === "granted") {
-      showToast("Avisos ya activados ✓");
+      showToast(t("notifications_already"));
       try {
         const reg = await navigator.serviceWorker.ready;
         reg.showNotification("FunCards", {
-          body: "Así se verán los avisos.",
+          body: getLang()==="en" ? "This is how notifications will look." : "Así se verán los avisos.",
           icon: "./icon.svg",
           badge: "./icon.svg",
           tag: "funcards-demo"
@@ -2229,14 +2436,14 @@
       return;
     }
     if (perm === "denied") {
-      showToast("Avisos bloqueados en el navegador");
+      showToast(t("notifications_blocked"));
       return;
     }
     try {
       const res = await Notification.requestPermission();
       updateNotifChips();
-      if (res === "granted") showToast("Avisos activados ✓");
-      else showToast("Avisos no activados");
+      if (res === "granted") showToast(t("notifications_on"));
+      else showToast(t("notifications_no"));
     } catch (e) {}
   }
   document.querySelectorAll("[data-notif-chip]").forEach(el => {
@@ -2285,15 +2492,15 @@
     sfx.tap(); haptic(10);
     const url = window.location.origin + window.location.pathname;
     const title = "FunCards";
-    const text = "Mira esta app para aprender a leer con el método Doman. Es gratis:";
+    const text = t("share_text");
     try {
       if (navigator.share) {
         await navigator.share({ title, text, url });
       } else if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
-        showToast("Enlace copiado ✓");
+        showToast(t("copied"));
       } else {
-        window.prompt("Copia este enlace para compartir:", url);
+        window.prompt(getLang()==="en"?"Copy this link to share:":"Copia este enlace para compartir:", url);
       }
     } catch (e) {
       // Usuario canceló el share nativo: nada
@@ -2306,7 +2513,7 @@
   async function startSession(batch) {
     if (running) return;
     currentBatch = batch;
-    sessionTitle.textContent = batch.name;
+    sessionTitle.textContent = batchName(batch);
     await warmUpVoices();
     try { speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch(e){}
     if (!hasSoundReminded()) {
@@ -2320,7 +2527,7 @@
   function setCardMode(mode) {
     cardText.classList.toggle("text-mode",  mode === "text");
     cardText.classList.toggle("image-mode", mode === "image");
-    passLabelInner.textContent = mode === "image" ? "Imagen" : "Lectura";
+    passLabelInner.textContent = mode === "image" ? (getLang()==="en"?"Image":"Imagen") : (getLang()==="en"?"Read":"Lectura");
   }
 
   async function runSession() {
@@ -2335,12 +2542,13 @@
       setCardMode(mode);
       const order = shuffle(cards);
       for (const c of order) {
+        const w = wordOf(c);
         if (mode === "image") {
-          cardText.textContent = c.emoji || c.text;
+          cardText.textContent = c.emoji || w;
         } else {
-          cardText.textContent = c.text;
+          cardText.textContent = w;
         }
-        speak(c.text);
+        speak(w);
         await sleep(CARD_MS);
         cardText.textContent = "";
         await sleep(PAUSE_MS);
@@ -2362,13 +2570,13 @@
     }
 
     pendingDone = {
-      msg: "¡" + currentBatch.name + " completado!",
+      msg: t("session_done_msg", batchName(currentBatch)),
       justMastered
     };
     // Si el padre activó avisos, intentar programar notificación
     // para cuando el cooldown de este lote termine (now + COOLDOWN_MS)
     if (!justMastered) {
-      scheduleBatchReadyNotification(currentBatch.name, Date.now() + COOLDOWN_MS);
+      scheduleBatchReadyNotification(batchName(currentBatch), Date.now() + COOLDOWN_MS);
     }
     // Después de los 5 pases, ejercicio de refuerzo "une palabra con imagen"
     startMatchExercise();
@@ -2435,7 +2643,7 @@
     for (const o of opts) {
       const b = document.createElement("button");
       b.className = "match-opt";
-      b.textContent = o.text;
+      b.textContent = wordOf(o);
       b.addEventListener("click", () => handleMatchAnswer(b, o, target));
       matchOptions.appendChild(b);
     }
@@ -2448,7 +2656,7 @@
       btn.classList.add("correct");
       sfx.coin();
       haptic(25);
-      speak(target.text);
+      speak(wordOf(target));
       // Deshabilitar más clicks durante la transición
       matchOptions.querySelectorAll("button").forEach(b => b.disabled = true);
       if (matchState.mistakesInRound === 0) matchState.firstTry++;
@@ -2522,7 +2730,7 @@
     });
   });
   btnReset.addEventListener("click", () => {
-    if (!confirm("¿Reiniciar todo el progreso? Se borrarán monedas y sesiones.")) return;
+    if (!confirm(t("reset_confirm"))) return;
     resetState();
     state = loadState();
     speechSynthesis.cancel();
@@ -2560,13 +2768,15 @@
     { id: "hard", name: "Difícil", emoji: "🦁" }
   ];
   const GAMES_META = [
-    { id: "runner",   name: "Runner",    emoji: "🏎️", desc: "Esquiva coches" },
-    { id: "parking",  name: "Parking",   emoji: "🅿️",  desc: "Recuerda dónde iban", levels: 3 },
-    { id: "naval",    name: "Hundir",    emoji: "🚢", desc: "Hunde la flota",      levels: 3 },
-    { id: "invasores",name: "Invasores", emoji: "👾", desc: "Dispara a los marcianos", levels: 3 },
-    { id: "simon",    name: "Simón",     emoji: "🔆", desc: "Repite la secuencia", levels: 3 },
-    { id: "sopa",     name: "Sopa",      emoji: "🔤", desc: "Busca las palabras" }
+    { id: "runner",   name: "Runner",    name_en: "Runner",    emoji: "🏎️", desc: "Esquiva coches",            desc_en: "Dodge the cars" },
+    { id: "parking",  name: "Parking",   name_en: "Parking",   emoji: "🅿️",  desc: "Recuerda dónde iban",       desc_en: "Remember where they go", levels: 3 },
+    { id: "naval",    name: "Hundir",    name_en: "Battleship",emoji: "🚢", desc: "Hunde la flota",             desc_en: "Sink the fleet",         levels: 3 },
+    { id: "invasores",name: "Invasores", name_en: "Invaders",  emoji: "👾", desc: "Dispara a los marcianos",    desc_en: "Shoot the aliens",       levels: 3 },
+    { id: "simon",    name: "Simón",     name_en: "Simon",     emoji: "🔆", desc: "Repite la secuencia",        desc_en: "Repeat the sequence",    levels: 3 },
+    { id: "sopa",     name: "Sopa",      name_en: "Word find", emoji: "🔤", desc: "Busca las palabras",         desc_en: "Find the words" }
   ];
+  function gameName(g) { return getLang()==="en" ? (g.name_en||g.name) : g.name; }
+  function gameDesc(g) { return getLang()==="en" ? (g.desc_en||g.desc) : g.desc; }
   const GAMES = {}; // id -> { start, stop, onPointerDown }
   let activeGameId = null;    // juego actualmente corriendo (null si no hay)
   let lastGameId   = null;    // último juego lanzado (para "Otra vida")
@@ -2602,10 +2812,10 @@
       b.className = "game-pick";
       b.disabled = !canPlay;
       const desc = g.levels
-        ? `${g.desc} · ${g.levels} niveles`
-        : g.desc;
+        ? `${gameDesc(g)} · ${g.levels} ${getLang()==="en"?"levels":"niveles"}`
+        : gameDesc(g);
       b.innerHTML = `<span class="pico">${g.emoji}</span>
-        <span class="pname">${g.name}</span>
+        <span class="pname">${gameName(g)}</span>
         <span class="pdesc">${desc}</span>`;
       b.addEventListener("click", () => startGame(g.id));
       gamePicker.appendChild(b);
@@ -2656,7 +2866,7 @@
     // Auto-avance dentro de la misma partida: 1 moneda = los 3 niveles del tirón
     if (won && hasLevels && currentPlayLevel < meta.levels) {
       const nextLevel = currentPlayLevel + 1;
-      showToast("¡Nivel " + nextLevel + "!");
+      showToast(t("level_up", nextLevel));
       sfx.win(); haptic([60, 30, 60]);
       setTimeout(() => launchLevel(lastGameId, nextLevel), 900);
       return;
@@ -2667,8 +2877,8 @@
     const fullRun = won && hasLevels && currentPlayLevel >= meta.levels;
     overEmoji.textContent = won ? "🏆" : "💥";
     overTitle.textContent = fullRun
-      ? "¡Los 3 niveles!"
-      : (won ? "¡Lo lograste!" : "¡Se acabó!");
+      ? t("three_levels_done")
+      : (won ? t("you_did_it") : t("game_over"));
     gameWalletEl.textContent = state.coins;
     const disabled = state.coins < 1;
     btnRetry.disabled = disabled;
@@ -3525,7 +3735,7 @@
       for (const b of catalog.batches) {
         if (!used.has(b.id)) continue;
         for (const c of b.cards) {
-          const w = (c.text || "").toLowerCase();
+          const w = (wordOf(c) || "").toLowerCase().split(" ")[0];
           // palabras simples sin tildes para evitar celdas no-ASCII
           const flat = w.replace(/[áàä]/g,"a").replace(/[éèë]/g,"e")
                         .replace(/[íìï]/g,"i").replace(/[óòö]/g,"o")
@@ -3754,11 +3964,35 @@
     setTimeout(() => sp.remove(), 600);
   }
 
+  // Lang picker UI
+  const langPicker = document.getElementById("langPicker");
+  function openLangPicker(onClose) {
+    langPicker.style.display = "flex";
+    langPicker.setAttribute("aria-hidden", "false");
+    langPicker.querySelectorAll("[data-pick-lang]").forEach(b => {
+      b.onclick = () => {
+        setLang(b.getAttribute("data-pick-lang"));
+        langPicker.style.display = "none";
+        langPicker.setAttribute("aria-hidden", "true");
+        if (onClose) onClose();
+      };
+    });
+  }
+  document.querySelectorAll("[data-lang-chip]").forEach(el => {
+    el.addEventListener("click", () => openLangPicker());
+  });
+
   (async function boot() {
+    document.documentElement.lang = getLang();
+    applyStaticI18n();
     renderWallet();
     await loadCatalog();
     renderBatchGrid();
     show("home");
+    // Si es la primera vez (sin lang guardado), pedir idioma antes de que se oculte el splash
+    if (!state.lang) {
+      setTimeout(() => openLangPicker(), 1400);
+    }
     // Dar tiempo a la secuencia completa: coin drop → slot flash → brand pop
     setTimeout(hideSplash, 2200);
     if ("speechSynthesis" in window) speechSynthesis.getVoices();

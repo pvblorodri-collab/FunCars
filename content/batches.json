@@ -1,19 +1,20 @@
 {
-  "language": "es-ES",
+  "languages": ["es-ES", "en-US"],
   "batches": [
     {
       "id": "mi-mundo",
       "order": 1,
       "level": 1,
       "name": "Mi mundo",
+      "name_en": "My world",
       "phase": "familiar_words",
       "text_color": "red",
       "cards": [
-        { "text": "sol",   "emoji": "☀️", "order": 1 },
-        { "text": "agua",  "emoji": "💧", "order": 2 },
-        { "text": "casa",  "emoji": "🏠", "order": 3 },
-        { "text": "pan",   "emoji": "🍞", "order": 4 },
-        { "text": "feliz", "emoji": "😊", "order": 5 }
+        { "text": "sol",   "text_en": "sun",   "emoji": "☀️", "order": 1 },
+        { "text": "agua",  "text_en": "water", "emoji": "💧", "order": 2 },
+        { "text": "casa",  "text_en": "home",  "emoji": "🏠", "order": 3 },
+        { "text": "pan",   "text_en": "bread", "emoji": "🍞", "order": 4 },
+        { "text": "feliz", "text_en": "happy", "emoji": "😊", "order": 5 }
       ]
     },
     {
@@ -21,14 +22,15 @@
       "order": 2,
       "level": 1,
       "name": "Mi cuerpo",
+      "name_en": "My body",
       "phase": "familiar_words",
       "text_color": "red",
       "cards": [
-        { "text": "ojo",   "emoji": "👁️", "order": 1 },
-        { "text": "boca",  "emoji": "👄", "order": 2 },
-        { "text": "mano",  "emoji": "✋", "order": 3 },
-        { "text": "pie",   "emoji": "🦶", "order": 4 },
-        { "text": "nariz", "emoji": "👃", "order": 5 }
+        { "text": "ojo",   "text_en": "eye",   "emoji": "👁️", "order": 1 },
+        { "text": "boca",  "text_en": "mouth", "emoji": "👄", "order": 2 },
+        { "text": "mano",  "text_en": "hand",  "emoji": "✋", "order": 3 },
+        { "text": "pie",   "text_en": "foot",  "emoji": "🦶", "order": 4 },
+        { "text": "nariz", "text_en": "nose",  "emoji": "👃", "order": 5 }
       ]
     },
     {
@@ -36,14 +38,15 @@
       "order": 3,
       "level": 1,
       "name": "Animales cercanos",
+      "name_en": "Pets",
       "phase": "familiar_words",
       "text_color": "red",
       "cards": [
-        { "text": "perro", "emoji": "🐶", "order": 1 },
-        { "text": "gato",  "emoji": "🐱", "order": 2 },
-        { "text": "pato",  "emoji": "🦆", "order": 3 },
-        { "text": "pez",   "emoji": "🐟", "order": 4 },
-        { "text": "oso",   "emoji": "🐻", "order": 5 }
+        { "text": "perro", "text_en": "dog",  "emoji": "🐶", "order": 1 },
+        { "text": "gato",  "text_en": "cat",  "emoji": "🐱", "order": 2 },
+        { "text": "pato",  "text_en": "duck", "emoji": "🦆", "order": 3 },
+        { "text": "pez",   "text_en": "fish", "emoji": "🐟", "order": 4 },
+        { "text": "oso",   "text_en": "bear", "emoji": "🐻", "order": 5 }
       ]
     },
     {
@@ -51,14 +54,15 @@
       "order": 4,
       "level": 1,
       "name": "Animales de granja",
+      "name_en": "Farm animals",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "vaca",    "emoji": "🐄", "order": 1 },
-        { "text": "pollo",   "emoji": "🐔", "order": 2 },
-        { "text": "caballo", "emoji": "🐴", "order": 3 },
-        { "text": "oveja",   "emoji": "🐑", "order": 4 },
-        { "text": "cerdo",   "emoji": "🐷", "order": 5 }
+        { "text": "vaca",    "text_en": "cow",     "emoji": "🐄", "order": 1 },
+        { "text": "pollo",   "text_en": "chicken", "emoji": "🐔", "order": 2 },
+        { "text": "caballo", "text_en": "horse",   "emoji": "🐴", "order": 3 },
+        { "text": "oveja",   "text_en": "sheep",   "emoji": "🐑", "order": 4 },
+        { "text": "cerdo",   "text_en": "pig",     "emoji": "🐷", "order": 5 }
       ]
     },
     {
@@ -66,14 +70,15 @@
       "order": 5,
       "level": 1,
       "name": "Comida",
+      "name_en": "Food",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "leche",   "emoji": "🥛", "order": 1 },
-        { "text": "manzana", "emoji": "🍎", "order": 2 },
-        { "text": "queso",   "emoji": "🧀", "order": 3 },
-        { "text": "huevo",   "emoji": "🥚", "order": 4 },
-        { "text": "uva",     "emoji": "🍇", "order": 5 }
+        { "text": "leche",   "text_en": "milk",   "emoji": "🥛", "order": 1 },
+        { "text": "manzana", "text_en": "apple",  "emoji": "🍎", "order": 2 },
+        { "text": "queso",   "text_en": "cheese", "emoji": "🧀", "order": 3 },
+        { "text": "huevo",   "text_en": "egg",    "emoji": "🥚", "order": 4 },
+        { "text": "uva",     "text_en": "grape",  "emoji": "🍇", "order": 5 }
       ]
     },
     {
@@ -81,14 +86,15 @@
       "order": 6,
       "level": 1,
       "name": "Naturaleza",
+      "name_en": "Nature",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "luna",     "emoji": "🌙", "order": 1 },
-        { "text": "flor",     "emoji": "🌸", "order": 2 },
-        { "text": "árbol",    "emoji": "🌳", "order": 3 },
-        { "text": "nube",     "emoji": "☁️", "order": 4 },
-        { "text": "estrella", "emoji": "⭐", "order": 5 }
+        { "text": "luna",     "text_en": "moon",   "emoji": "🌙", "order": 1 },
+        { "text": "flor",     "text_en": "flower", "emoji": "🌸", "order": 2 },
+        { "text": "árbol",    "text_en": "tree",   "emoji": "🌳", "order": 3 },
+        { "text": "nube",     "text_en": "cloud",  "emoji": "☁️", "order": 4 },
+        { "text": "estrella", "text_en": "star",   "emoji": "⭐", "order": 5 }
       ]
     },
     {
@@ -96,14 +102,15 @@
       "order": 7,
       "level": 1,
       "name": "Objetos de casa",
+      "name_en": "Home things",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "pelota", "emoji": "⚽", "order": 1 },
-        { "text": "silla",  "emoji": "🪑", "order": 2 },
-        { "text": "cama",   "emoji": "🛏️", "order": 3 },
-        { "text": "libro",  "emoji": "📖", "order": 4 },
-        { "text": "taza",   "emoji": "☕", "order": 5 }
+        { "text": "pelota", "text_en": "ball",  "emoji": "⚽", "order": 1 },
+        { "text": "silla",  "text_en": "chair", "emoji": "🪑", "order": 2 },
+        { "text": "cama",   "text_en": "bed",   "emoji": "🛏️", "order": 3 },
+        { "text": "libro",  "text_en": "book",  "emoji": "📖", "order": 4 },
+        { "text": "taza",   "text_en": "cup",   "emoji": "☕", "order": 5 }
       ]
     },
     {
@@ -111,14 +118,15 @@
       "order": 8,
       "level": 1,
       "name": "Colores",
+      "name_en": "Colors",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "rojo",     "emoji": "🔴", "order": 1 },
-        { "text": "azul",     "emoji": "🔵", "order": 2 },
-        { "text": "verde",    "emoji": "🟢", "order": 3 },
-        { "text": "amarillo", "emoji": "🟡", "order": 4 },
-        { "text": "negro",    "emoji": "⚫", "order": 5 }
+        { "text": "rojo",     "text_en": "red",    "emoji": "🔴", "order": 1 },
+        { "text": "azul",     "text_en": "blue",   "emoji": "🔵", "order": 2 },
+        { "text": "verde",    "text_en": "green",  "emoji": "🟢", "order": 3 },
+        { "text": "amarillo", "text_en": "yellow", "emoji": "🟡", "order": 4 },
+        { "text": "negro",    "text_en": "black",  "emoji": "⚫", "order": 5 }
       ]
     },
     {
@@ -126,14 +134,15 @@
       "order": 9,
       "level": 1,
       "name": "Afectos",
+      "name_en": "Feelings",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "risa",   "emoji": "😂", "order": 1 },
-        { "text": "abrazo", "emoji": "🤗", "order": 2 },
-        { "text": "beso",   "emoji": "😘", "order": 3 },
-        { "text": "amor",   "emoji": "❤️", "order": 4 },
-        { "text": "baile",  "emoji": "💃", "order": 5 }
+        { "text": "risa",   "text_en": "laugh", "emoji": "😂", "order": 1 },
+        { "text": "abrazo", "text_en": "hug",   "emoji": "🤗", "order": 2 },
+        { "text": "beso",   "text_en": "kiss",  "emoji": "😘", "order": 3 },
+        { "text": "amor",   "text_en": "love",  "emoji": "❤️", "order": 4 },
+        { "text": "baile",  "text_en": "dance", "emoji": "💃", "order": 5 }
       ]
     },
     {
@@ -141,14 +150,15 @@
       "order": 10,
       "level": 1,
       "name": "Acciones",
+      "name_en": "Actions",
       "phase": "expanded_vocab",
       "text_color": "red",
       "cards": [
-        { "text": "correr", "emoji": "🏃", "order": 1 },
-        { "text": "saltar", "emoji": "🤸", "order": 2 },
-        { "text": "dormir", "emoji": "😴", "order": 3 },
-        { "text": "comer",  "emoji": "🍽️", "order": 4 },
-        { "text": "jugar",  "emoji": "🧸", "order": 5 }
+        { "text": "correr", "text_en": "run",   "emoji": "🏃", "order": 1 },
+        { "text": "saltar", "text_en": "jump",  "emoji": "🤸", "order": 2 },
+        { "text": "dormir", "text_en": "sleep", "emoji": "😴", "order": 3 },
+        { "text": "comer",  "text_en": "eat",   "emoji": "🍽️", "order": 4 },
+        { "text": "jugar",  "text_en": "play",  "emoji": "🧸", "order": 5 }
       ]
     },
 
@@ -157,14 +167,15 @@
       "order": 11,
       "level": 2,
       "name": "La naturaleza",
+      "name_en": "Nature",
       "phase": "couplets",
       "text_color": "red",
       "cards": [
-        { "text": "sol grande",    "emoji": "☀️", "order": 1 },
-        { "text": "luna llena",    "emoji": "🌕", "order": 2 },
-        { "text": "nube blanca",   "emoji": "☁️", "order": 3 },
-        { "text": "flor roja",     "emoji": "🌹", "order": 4 },
-        { "text": "agua fría",     "emoji": "💧", "order": 5 }
+        { "text": "sol grande",  "text_en": "big sun",     "emoji": "☀️", "order": 1 },
+        { "text": "luna llena",  "text_en": "full moon",   "emoji": "🌕", "order": 2 },
+        { "text": "nube blanca", "text_en": "white cloud", "emoji": "☁️", "order": 3 },
+        { "text": "flor roja",   "text_en": "red flower",  "emoji": "🌹", "order": 4 },
+        { "text": "agua fría",   "text_en": "cold water",  "emoji": "💧", "order": 5 }
       ]
     },
     {
@@ -172,14 +183,15 @@
       "order": 12,
       "level": 2,
       "name": "Los animales hacen",
+      "name_en": "Animals do",
       "phase": "couplets",
       "text_color": "red",
       "cards": [
-        { "text": "perro corre", "emoji": "🐕", "order": 1 },
-        { "text": "gato duerme", "emoji": "😴", "order": 2 },
-        { "text": "pato nada",   "emoji": "🦆", "order": 3 },
-        { "text": "pez salta",   "emoji": "🐟", "order": 4 },
-        { "text": "oso come",    "emoji": "🐻", "order": 5 }
+        { "text": "perro corre", "text_en": "dog runs",    "emoji": "🐕", "order": 1 },
+        { "text": "gato duerme", "text_en": "cat sleeps",  "emoji": "😴", "order": 2 },
+        { "text": "pato nada",   "text_en": "duck swims",  "emoji": "🦆", "order": 3 },
+        { "text": "pez salta",   "text_en": "fish jumps",  "emoji": "🐟", "order": 4 },
+        { "text": "oso come",    "text_en": "bear eats",   "emoji": "🐻", "order": 5 }
       ]
     },
     {
@@ -187,14 +199,15 @@
       "order": 13,
       "level": 2,
       "name": "Comida rica",
+      "name_en": "Yummy food",
       "phase": "couplets",
       "text_color": "red",
       "cards": [
-        { "text": "pan duro",      "emoji": "🍞", "order": 1 },
-        { "text": "leche fría",    "emoji": "🥛", "order": 2 },
-        { "text": "uva dulce",     "emoji": "🍇", "order": 3 },
-        { "text": "queso rico",    "emoji": "🧀", "order": 4 },
-        { "text": "manzana roja",  "emoji": "🍎", "order": 5 }
+        { "text": "pan duro",     "text_en": "hard bread",   "emoji": "🍞", "order": 1 },
+        { "text": "leche fría",   "text_en": "cold milk",    "emoji": "🥛", "order": 2 },
+        { "text": "uva dulce",    "text_en": "sweet grape",  "emoji": "🍇", "order": 3 },
+        { "text": "queso rico",   "text_en": "tasty cheese", "emoji": "🧀", "order": 4 },
+        { "text": "manzana roja", "text_en": "red apple",    "emoji": "🍎", "order": 5 }
       ]
     },
     {
@@ -202,14 +215,15 @@
       "order": 14,
       "level": 2,
       "name": "Mi cuerpo hace",
+      "name_en": "My body does",
       "phase": "couplets",
       "text_color": "red",
       "cards": [
-        { "text": "mano toca",   "emoji": "✋", "order": 1 },
-        { "text": "ojo mira",    "emoji": "👁️", "order": 2 },
-        { "text": "boca canta",  "emoji": "🎤", "order": 3 },
-        { "text": "pie salta",   "emoji": "🦶", "order": 4 },
-        { "text": "nariz huele", "emoji": "👃", "order": 5 }
+        { "text": "mano toca",   "text_en": "hand touches", "emoji": "✋", "order": 1 },
+        { "text": "ojo mira",    "text_en": "eye looks",    "emoji": "👁️", "order": 2 },
+        { "text": "boca canta",  "text_en": "mouth sings",  "emoji": "🎤", "order": 3 },
+        { "text": "pie salta",   "text_en": "foot jumps",   "emoji": "🦶", "order": 4 },
+        { "text": "nariz huele", "text_en": "nose smells",  "emoji": "👃", "order": 5 }
       ]
     },
     {
@@ -217,14 +231,15 @@
       "order": 15,
       "level": 2,
       "name": "Colores del mundo",
+      "name_en": "World colors",
       "phase": "couplets",
       "text_color": "red",
       "cards": [
-        { "text": "cielo azul",      "emoji": "🌤️", "order": 1 },
-        { "text": "hierba verde",    "emoji": "🌱", "order": 2 },
-        { "text": "fuego rojo",      "emoji": "🔥", "order": 3 },
-        { "text": "limón amarillo",  "emoji": "🍋", "order": 4 },
-        { "text": "carbón negro",    "emoji": "⬛", "order": 5 }
+        { "text": "cielo azul",     "text_en": "blue sky",     "emoji": "🌤️", "order": 1 },
+        { "text": "hierba verde",   "text_en": "green grass",  "emoji": "🌱", "order": 2 },
+        { "text": "fuego rojo",     "text_en": "red fire",     "emoji": "🔥", "order": 3 },
+        { "text": "limón amarillo", "text_en": "yellow lemon", "emoji": "🍋", "order": 4 },
+        { "text": "carbón negro",   "text_en": "black coal",   "emoji": "⬛", "order": 5 }
       ]
     },
     {
@@ -232,14 +247,15 @@
       "order": 16,
       "level": 2,
       "name": "Siento",
+      "name_en": "I feel",
       "phase": "couplets",
       "text_color": "red",
       "cards": [
-        { "text": "risa fuerte",   "emoji": "😂", "order": 1 },
-        { "text": "abrazo cálido", "emoji": "🤗", "order": 2 },
-        { "text": "beso dulce",    "emoji": "😘", "order": 3 },
-        { "text": "amor grande",   "emoji": "❤️", "order": 4 },
-        { "text": "baile libre",   "emoji": "💃", "order": 5 }
+        { "text": "risa fuerte",   "text_en": "loud laugh",  "emoji": "😂", "order": 1 },
+        { "text": "abrazo cálido", "text_en": "warm hug",    "emoji": "🤗", "order": 2 },
+        { "text": "beso dulce",    "text_en": "sweet kiss",  "emoji": "😘", "order": 3 },
+        { "text": "amor grande",   "text_en": "big love",    "emoji": "❤️", "order": 4 },
+        { "text": "baile libre",   "text_en": "free dance",  "emoji": "💃", "order": 5 }
       ]
     },
     {
@@ -247,14 +263,15 @@
       "order": 17,
       "level": 2,
       "name": "Yo hago",
+      "name_en": "I do",
       "phase": "short_phrases",
       "text_color": "red",
       "cards": [
-        { "text": "yo salto", "emoji": "🤸", "order": 1 },
-        { "text": "yo corro", "emoji": "🏃", "order": 2 },
-        { "text": "yo río",   "emoji": "😄", "order": 3 },
-        { "text": "yo juego", "emoji": "🧸", "order": 4 },
-        { "text": "yo canto", "emoji": "🎵", "order": 5 }
+        { "text": "yo salto", "text_en": "I jump",  "emoji": "🤸", "order": 1 },
+        { "text": "yo corro", "text_en": "I run",   "emoji": "🏃", "order": 2 },
+        { "text": "yo río",   "text_en": "I laugh", "emoji": "😄", "order": 3 },
+        { "text": "yo juego", "text_en": "I play",  "emoji": "🧸", "order": 4 },
+        { "text": "yo canto", "text_en": "I sing",  "emoji": "🎵", "order": 5 }
       ]
     },
     {
@@ -262,14 +279,15 @@
       "order": 18,
       "level": 2,
       "name": "Soy",
+      "name_en": "I am",
       "phase": "pnl",
       "text_color": "red",
       "cards": [
-        { "text": "soy feliz",     "emoji": "😊", "order": 1 },
-        { "text": "soy fuerte",    "emoji": "💪", "order": 2 },
-        { "text": "soy valiente",  "emoji": "🦁", "order": 3 },
-        { "text": "soy capaz",     "emoji": "✨", "order": 4 },
-        { "text": "soy único",     "emoji": "⭐", "order": 5 }
+        { "text": "soy feliz",    "text_en": "I am happy",  "emoji": "😊", "order": 1 },
+        { "text": "soy fuerte",   "text_en": "I am strong", "emoji": "💪", "order": 2 },
+        { "text": "soy valiente", "text_en": "I am brave",  "emoji": "🦁", "order": 3 },
+        { "text": "soy capaz",    "text_en": "I am able",   "emoji": "✨", "order": 4 },
+        { "text": "soy único",    "text_en": "I am unique", "emoji": "⭐", "order": 5 }
       ]
     },
     {
@@ -277,14 +295,15 @@
       "order": 19,
       "level": 2,
       "name": "El mundo pasa",
+      "name_en": "World moves",
       "phase": "short_phrases",
       "text_color": "red",
       "cards": [
-        { "text": "luna sale",   "emoji": "🌙", "order": 1 },
-        { "text": "viento sopla","emoji": "🌬️", "order": 2 },
-        { "text": "lluvia moja", "emoji": "🌧️", "order": 3 },
-        { "text": "nieve cae",   "emoji": "❄️", "order": 4 },
-        { "text": "árbol crece", "emoji": "🌳", "order": 5 }
+        { "text": "luna sale",   "text_en": "moon rises",  "emoji": "🌙", "order": 1 },
+        { "text": "viento sopla","text_en": "wind blows",  "emoji": "🌬️", "order": 2 },
+        { "text": "lluvia moja", "text_en": "rain pours",  "emoji": "🌧️", "order": 3 },
+        { "text": "nieve cae",   "text_en": "snow falls",  "emoji": "❄️", "order": 4 },
+        { "text": "árbol crece", "text_en": "tree grows",  "emoji": "🌳", "order": 5 }
       ]
     },
     {
@@ -292,14 +311,15 @@
       "order": 20,
       "level": 2,
       "name": "Aprendo",
+      "name_en": "I learn",
       "phase": "pnl",
       "text_color": "red",
       "cards": [
-        { "text": "aprendo rápido", "emoji": "⚡", "order": 1 },
-        { "text": "me gusta leer",  "emoji": "📚", "order": 2 },
-        { "text": "soy campeón",    "emoji": "🏆", "order": 3 },
-        { "text": "hoy sonrío",     "emoji": "😁", "order": 4 },
-        { "text": "tengo éxito",    "emoji": "🌟", "order": 5 }
+        { "text": "aprendo rápido", "text_en": "I learn fast", "emoji": "⚡", "order": 1 },
+        { "text": "me gusta leer",  "text_en": "I like books", "emoji": "📚", "order": 2 },
+        { "text": "soy campeón",    "text_en": "I am a champ", "emoji": "🏆", "order": 3 },
+        { "text": "hoy sonrío",     "text_en": "I smile today","emoji": "😁", "order": 4 },
+        { "text": "tengo éxito",    "text_en": "I succeed",    "emoji": "🌟", "order": 5 }
       ]
     }
   ]
