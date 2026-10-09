@@ -1372,7 +1372,8 @@
     { id: "race",    name: "Carrera", emoji: "🏁", desc: "Toca para acelerar" }
   ];
   const GAMES = {}; // id -> { start, stop, onPointerDown }
-  let activeGameId = null;
+  let activeGameId = null;    // juego actualmente corriendo (null si no hay)
+  let lastGameId   = null;    // último juego lanzado (para "Otra vida")
   let canvasW = 0, canvasH = 0;
 
   function fitCanvas() {
@@ -1424,6 +1425,7 @@
     renderWallet();
     gameWalletEl.textContent = state.coins;
     activeGameId = gameId;
+    lastGameId   = gameId;
     showOverlay(null);
     gameScoreEl.textContent = "0";
     GAMES[gameId].start();
@@ -1470,14 +1472,11 @@
     if (g && g.onResize) g.onResize();
   });
 
-  btnRetry.addEventListener("click", () => activeGameId == null
-    ? null
-    : (() => {
-        const id = activeGameId;
-        stopActiveGame();
-        activeGameId = id; // conservar
-        startGame(id);
-      })());
+  btnRetry.addEventListener("click", () => {
+    if (!lastGameId || state.coins < 1) return;
+    stopActiveGame();
+    startGame(lastGameId);
+  });
   btnOverBack.addEventListener("click", () => { stopActiveGame(); enterGameScreen(); });
   btnGameBack.addEventListener("click", () => { show("home"); });
 
@@ -1621,6 +1620,7 @@
       shuffledOrder: [],
       tShow: 0, showMs: 2500,
       feedback: null,    // {ok, slot, ts}
+      placedSlots: new Set(), // slots donde el niño ha acertado y queda el coche visible
       rafId: null,
       running: false
     };
@@ -1646,6 +1646,7 @@
     function start() {
       s.cols = 2; s.rows = 2;
       s.correct = 0; s.asked = 0; s.feedback = null;
+      s.placedSlots = new Set();
       layout();
       // Elegir N colores y asignarlos a slots aleatorios
       const N = s.cols * s.rows;
@@ -1705,8 +1706,9 @@
             roundRect(sl.x, sl.y, sl.w, sl.h, 14); ctx.fill();
           }
         }
-        // Dibujar coches en fase show
-        if (s.phase === "show") {
+        // Dibujar coches: en fase 'show' TODOS, en fase 'quiz' sólo los ya acertados
+        const showHere = s.phase === "show" || s.placedSlots.has(i);
+        if (showHere) {
           const car = s.cars.find(c => c.slot === i);
           if (car) {
             const cw = Math.min(sl.w * 0.6, 70);
@@ -1736,6 +1738,7 @@
           s.feedback = { ok, slot: i, ts: performance.now() };
           if (ok) {
             s.correct++;
+            s.placedSlots.add(i);
             s.targetIdx++;
             gameScoreEl.textContent = s.correct + "/" + s.cars.length;
             if (s.targetIdx >= s.cars.length) {
