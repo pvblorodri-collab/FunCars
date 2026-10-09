@@ -243,6 +243,27 @@
   .wallet #walletCountW,
   .wallet #gameWallet { color: var(--ink); font-weight: 700; }
 
+  /* Chip pequeño para notificaciones */
+  .notif-chip {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+    line-height: 1;
+  }
+  .notif-chip[data-state="on"] { background: var(--doman-red); color: #fff; }
+  .notif-chip:active { transform: translateY(1px); }
+
   /* Chip "sonido" en la topbar: recordatorio permanente */
   .sound-chip {
     background: rgba(255,255,255,0.72);
@@ -1302,6 +1323,35 @@
   .game-pick .pname { font-weight: 700; }
   .game-pick .pdesc { font-weight: 500; font-size: 0.78rem; opacity: 0.7; }
   .game-pick:active:not(:disabled) { transform: translateY(2px); }
+
+  /* Difficulty picker */
+  .diff-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .diff-btn {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 18px;
+    padding: 14px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 700;
+    min-width: 100px;
+    transition: transform 120ms var(--ease-out), background 120ms var(--ease-out);
+  }
+  .diff-btn:active { transform: translateY(2px) scale(0.97); background: rgba(255,255,255,0.18); }
+  .diff-btn .diff-emoji { font-size: 2rem; line-height: 1; }
+  .diff-btn .diff-name  { font-size: 0.95rem; }
 </style>
 </head>
 <body>
@@ -1334,9 +1384,12 @@
 <!-- ====================  HOME  ==================== -->
 <section id="home" class="screen active">
   <div class="topbar">
-    <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
-      <span class="sfx">🔊</span><span>Sonido</span>
-    </button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
+        <span class="sfx">🔊</span><span>Sonido</span>
+      </button>
+      <button class="notif-chip" data-notif-chip aria-label="Activar avisos">🔔</button>
+    </div>
     <div class="wallet"><span id="walletCount">0</span> <span class="coin">🪙</span></div>
   </div>
 
@@ -1420,9 +1473,12 @@
 <!-- ====================  WORDS (MIS PALABRAS)  ==================== -->
 <section id="words" class="screen">
   <div class="topbar">
-    <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
-      <span class="sfx">🔊</span><span>Sonido</span>
-    </button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
+        <span class="sfx">🔊</span><span>Sonido</span>
+      </button>
+      <button class="notif-chip" data-notif-chip aria-label="Activar avisos">🔔</button>
+    </div>
     <div class="wallet"><span id="walletCountW">0</span> <span class="coin">🪙</span></div>
   </div>
   <div class="words-header">
@@ -1498,6 +1554,14 @@
       <div class="sub" id="noCoinsHint" style="display:none;">
         No tienes monedas. Lee una sesión para conseguir vidas.
       </div>
+    </div>
+
+    <!-- Difficulty picker (parking, naval) -->
+    <div class="game-overlay" id="overlayDiff">
+      <h2>Elige dificultad</h2>
+      <div class="sub">Cada partida cuesta <b>1 🪙</b>.</div>
+      <div class="diff-row" id="diffRow"></div>
+      <button class="btn-ghost" id="btnDiffBack">Volver</button>
     </div>
 
     <!-- Game over -->
@@ -2117,6 +2181,81 @@
     el.addEventListener("click", () => { sfx.tap(); openSoundReminder(); });
   });
 
+  // Notificaciones (opt-in)
+  function notifPermission() {
+    return (typeof Notification !== "undefined") ? Notification.permission : "unsupported";
+  }
+  function updateNotifChips() {
+    const state = notifPermission();
+    document.querySelectorAll("[data-notif-chip]").forEach(el => {
+      el.dataset.state = state === "granted" ? "on" : "off";
+      el.title = state === "granted" ? "Avisos activados" : "Activar avisos";
+    });
+  }
+  async function toggleNotifications() {
+    sfx.tap();
+    if (typeof Notification === "undefined") {
+      showToast("Tu navegador no soporta avisos");
+      return;
+    }
+    const perm = Notification.permission;
+    if (perm === "granted") {
+      showToast("Avisos ya activados ✓");
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        reg.showNotification("FunCards", {
+          body: "Así se verán los avisos.",
+          icon: "./icon.svg",
+          badge: "./icon.svg",
+          tag: "funcards-demo"
+        });
+      } catch (e) {}
+      return;
+    }
+    if (perm === "denied") {
+      showToast("Avisos bloqueados en el navegador");
+      return;
+    }
+    try {
+      const res = await Notification.requestPermission();
+      updateNotifChips();
+      if (res === "granted") showToast("Avisos activados ✓");
+      else showToast("Avisos no activados");
+    } catch (e) {}
+  }
+  document.querySelectorAll("[data-notif-chip]").forEach(el => {
+    el.addEventListener("click", toggleNotifications);
+  });
+
+  async function scheduleBatchReadyNotification(batchName, whenMs) {
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      // Notification Triggers (Chrome Android, experimental)
+      if ("TimestampTrigger" in window && "showTrigger" in Notification.prototype) {
+        reg.showNotification("¡" + batchName + " listo!", {
+          body: "La siguiente sesión ya está disponible.",
+          icon: "./icon.svg",
+          tag: "ready-" + batchName,
+          showTrigger: new TimestampTrigger(whenMs)
+        });
+      }
+      // Fallback: in-tab setTimeout (sólo si el usuario deja la pestaña abierta)
+      const delay = whenMs - Date.now();
+      if (delay > 0 && delay < 24 * 60 * 60 * 1000) {
+        setTimeout(() => {
+          try {
+            reg.showNotification("¡" + batchName + " listo!", {
+              body: "La siguiente sesión ya está disponible.",
+              icon: "./icon.svg",
+              tag: "ready-" + batchName
+            });
+          } catch (e) {}
+        }, delay);
+      }
+    } catch (e) {}
+  }
+
   // Compartir
   const toastEl = document.getElementById("toast");
   let toastTimer = null;
@@ -2210,6 +2349,11 @@
       msg: "¡" + currentBatch.name + " completado!",
       justMastered
     };
+    // Si el padre activó avisos, intentar programar notificación
+    // para cuando el cooldown de este lote termine (now + COOLDOWN_MS)
+    if (!justMastered) {
+      scheduleBatchReadyNotification(currentBatch.name, Date.now() + COOLDOWN_MS);
+    }
     // Después de los 5 pases, ejercicio de refuerzo "une palabra con imagen"
     startMatchExercise();
   }
@@ -2380,7 +2524,10 @@
   const canvas       = document.getElementById("gameCanvas");
   const ctx          = canvas.getContext("2d");
   const overlayPicker= document.getElementById("overlayPicker");
+  const overlayDiff  = document.getElementById("overlayDiff");
   const overlayOver  = document.getElementById("overlayOver");
+  const diffRow      = document.getElementById("diffRow");
+  const btnDiffBack  = document.getElementById("btnDiffBack");
   const noCoinsHint  = document.getElementById("noCoinsHint");
   const gamePicker   = document.getElementById("gamePicker");
   const btnRetry     = document.getElementById("btnRetry");
@@ -2394,11 +2541,17 @@
   const gameWalletEl = document.getElementById("gameWallet");
 
   // Registro de juegos. Cada uno expone start(ctx, W, H) y stop().
+  const DIFFS_META = [
+    { id: "easy", name: "Fácil",   emoji: "🐣" },
+    { id: "med",  name: "Medio",   emoji: "🦊" },
+    { id: "hard", name: "Difícil", emoji: "🦁" }
+  ];
   const GAMES_META = [
-    { id: "runner",  name: "Runner",  emoji: "🏎️", desc: "Esquiva coches" },
-    { id: "parking", name: "Parking", emoji: "🅿️",  desc: "Recuerda dónde iban" },
-    { id: "race",    name: "Carrera", emoji: "🏁", desc: "Toca para acelerar" },
-    { id: "sopa",    name: "Sopa",    emoji: "🔤", desc: "Busca las palabras" }
+    { id: "runner",   name: "Runner",    emoji: "🏎️", desc: "Esquiva coches" },
+    { id: "parking",  name: "Parking",   emoji: "🅿️",  desc: "Recuerda dónde iban", difficulties: true },
+    { id: "naval",    name: "Hundir",    emoji: "🚢", desc: "Hunde la flota",      difficulties: true },
+    { id: "invasores",name: "Invasores", emoji: "👾", desc: "Dispara a los marcianos", difficulties: true },
+    { id: "sopa",     name: "Sopa",      emoji: "🔤", desc: "Busca las palabras" }
   ];
   const GAMES = {}; // id -> { start, stop, onPointerDown }
   let activeGameId = null;    // juego actualmente corriendo (null si no hay)
@@ -2437,17 +2590,37 @@
       b.innerHTML = `<span class="pico">${g.emoji}</span>
         <span class="pname">${g.name}</span>
         <span class="pdesc">${g.desc}</span>`;
-      b.addEventListener("click", () => startGame(g.id));
+      b.addEventListener("click", () => {
+        if (g.difficulties) openDifficultyFor(g.id);
+        else startGame(g.id);
+      });
       gamePicker.appendChild(b);
     }
   }
 
   function showOverlay(kind) {
     overlayPicker.classList.toggle("active", kind === "picker");
+    overlayDiff.classList.toggle("active",   kind === "diff");
     overlayOver.classList.toggle("active",   kind === "over");
   }
 
-  function startGame(gameId) {
+  // Mapa de últimas dificultades por juego (para "Otra vida")
+  const lastDifficulty = {};
+
+  function openDifficultyFor(gameId) {
+    sfx.tap();
+    diffRow.innerHTML = "";
+    for (const d of DIFFS_META) {
+      const b = document.createElement("button");
+      b.className = "diff-btn";
+      b.innerHTML = `<span class="diff-emoji">${d.emoji}</span><span class="diff-name">${d.name}</span>`;
+      b.addEventListener("click", () => startGame(gameId, d.id));
+      diffRow.appendChild(b);
+    }
+    showOverlay("diff");
+  }
+
+  function startGame(gameId, difficulty) {
     if (state.coins < 1) return;
     state.coins -= 1;
     saveState(state);
@@ -2455,11 +2628,12 @@
     gameWalletEl.textContent = state.coins;
     activeGameId = gameId;
     lastGameId   = gameId;
+    if (difficulty) lastDifficulty[gameId] = difficulty;
     showOverlay(null);
     gameScoreEl.textContent = "0";
     sfx.start();
     haptic(20);
-    GAMES[gameId].start();
+    GAMES[gameId].start({ difficulty: difficulty || lastDifficulty[gameId] || "easy" });
   }
 
   function stopActiveGame() {
@@ -2508,8 +2682,9 @@
   btnRetry.addEventListener("click", () => {
     if (!lastGameId || state.coins < 1) return;
     stopActiveGame();
-    startGame(lastGameId);
+    startGame(lastGameId, lastDifficulty[lastGameId]);
   });
+  btnDiffBack.addEventListener("click", () => { sfx.tap(); enterGameScreen(); });
   btnOverBack.addEventListener("click", () => { stopActiveGame(); enterGameScreen(); });
   btnGameBack.addEventListener("click", () => { show("home"); });
 
@@ -2639,21 +2814,28 @@
   })();
 
   // ============================================================
-  //  GAME: Parking (memoria visual)
+  //  GAME: Parking (memoria visual) — 3 dificultades
   // ============================================================
   (() => {
-    const COLORS = ["#E53935","#4FC3F7","#66BB6A","#FFC107","#AB47BC","#FF8A5B"];
+    const COLORS = [
+      "#E53935","#4FC3F7","#66BB6A","#FFC107","#AB47BC",
+      "#FF8A5B","#F06292","#26A69A","#8D6E63"
+    ];
+    const DIFF = {
+      easy: { cols: 2, rows: 2, showMs: 3000 },  // 4 coches
+      med:  { cols: 3, rows: 2, showMs: 2500 },  // 6 coches
+      hard: { cols: 3, rows: 3, showMs: 2000 }   // 9 coches
+    };
     const s = {
-      phase: "idle",     // 'show' | 'quiz' | 'wait'
-      cars: [],          // {color, slot}
-      slots: [],         // {x,y,w,h}
+      phase: "idle",
+      cars: [], slots: [],
       cols: 2, rows: 2,
       correct: 0, asked: 0,
-      targetIdx: 0,      // índice en cars al preguntar
+      targetIdx: 0,
       shuffledOrder: [],
       tShow: 0, showMs: 2500,
-      feedback: null,    // {ok, slot, ts}
-      placedSlots: new Set(), // slots donde el niño ha acertado y queda el coche visible
+      feedback: null,
+      placedSlots: new Set(),
       rafId: null,
       running: false
     };
@@ -2676,8 +2858,9 @@
         }
       }
     }
-    function start() {
-      s.cols = 2; s.rows = 2;
+    function start(opts) {
+      const d = DIFF[(opts && opts.difficulty) || "easy"];
+      s.cols = d.cols; s.rows = d.rows; s.showMs = d.showMs;
       s.correct = 0; s.asked = 0; s.feedback = null;
       s.placedSlots = new Set();
       layout();
@@ -2794,27 +2977,197 @@
   })();
 
   // ============================================================
-  //  GAME: Carrera 1 vs 1 (tap para acelerar)
+  //  GAME: Hundir la flota (Naval) — 3 dificultades
   // ============================================================
   (() => {
+    const DIFF = {
+      easy: { grid: 5, ships: [2, 2] },
+      med:  { grid: 6, ships: [2, 2, 3] },
+      hard: { grid: 7, ships: [2, 2, 3, 3] }
+    };
+    const s = {
+      running: false,
+      grid: [],
+      size: 5,
+      ships: [],
+      hits: 0, misses: 0, totalShipCells: 0,
+      cellSize: 0, gridX: 0, gridY: 0
+    };
+    function layout() {
+      const availW = canvasW - 32;
+      const availH = canvasH - 220;
+      s.cellSize = Math.floor(Math.min(availW / s.size, availH / s.size));
+      s.gridX = (canvasW - s.cellSize * s.size) / 2;
+      s.gridY = 110;
+    }
+    function tryPlaceShip(size) {
+      for (let t = 0; t < 100; t++) {
+        const dir = Math.random() < 0.5 ? 'H' : 'V';
+        const r = Math.floor(Math.random() * s.size);
+        const c = Math.floor(Math.random() * s.size);
+        const cells = [];
+        let ok = true;
+        for (let i = 0; i < size; i++) {
+          const rr = dir === 'V' ? r + i : r;
+          const cc = dir === 'H' ? c + i : c;
+          if (rr >= s.size || cc >= s.size || s.grid[rr][cc] === 'ship') { ok = false; break; }
+          cells.push([rr, cc]);
+        }
+        if (!ok) continue;
+        for (const [rr, cc] of cells) s.grid[rr][cc] = 'ship';
+        s.ships.push({ cells, hits: 0, size });
+        return true;
+      }
+      return false;
+    }
+    function start(opts) {
+      const d = DIFF[(opts && opts.difficulty) || "easy"];
+      s.size = d.grid;
+      s.grid = Array.from({length: s.size}, () => Array(s.size).fill(null));
+      s.ships = [];
+      for (const sz of d.ships) tryPlaceShip(sz);
+      s.hits = 0; s.misses = 0;
+      s.totalShipCells = d.ships.reduce((a, b) => a + b, 0);
+      s.running = true;
+      layout();
+      gameScoreEl.textContent = s.hits + "/" + s.totalShipCells;
+      draw();
+    }
+    function stop() { s.running = false; }
+    function draw() {
+      const W = canvasW, H = canvasH;
+      ctx.fillStyle = "#102A3A"; ctx.fillRect(0, 0, W, H);
+      ctx.font = "600 20px Fredoka, sans-serif";
+      ctx.fillStyle = "#FFF"; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText("Hundir la flota", W/2, 56);
+      const cs = s.cellSize;
+      for (let r = 0; r < s.size; r++) {
+        for (let c = 0; c < s.size; c++) {
+          const x = s.gridX + c * cs;
+          const y = s.gridY + r * cs;
+          const cell = s.grid[r][c];
+          // Agua
+          ctx.fillStyle = cell === 'hit'  ? '#E53935'
+                        : cell === 'miss' ? '#90CAF9'
+                        : '#1565C0';
+          roundRect(x + 2, y + 2, cs - 4, cs - 4, 6); ctx.fill();
+          // Olitas (deco)
+          if (!cell) {
+            ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + 8, y + cs/2);
+            ctx.quadraticCurveTo(x + cs/2, y + cs/2 - 4, x + cs - 8, y + cs/2);
+            ctx.stroke();
+          }
+          // Marcas
+          if (cell === 'hit') {
+            ctx.strokeStyle = '#FFF'; ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x + 10, y + 10); ctx.lineTo(x + cs - 10, y + cs - 10);
+            ctx.moveTo(x + cs - 10, y + 10); ctx.lineTo(x + 10, y + cs - 10);
+            ctx.stroke();
+          } else if (cell === 'miss') {
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(x + cs/2, y + cs/2, 4, 0, Math.PI*2); ctx.fill();
+          }
+        }
+      }
+      // HUD inferior
+      const bottomY = s.gridY + cs * s.size + 24;
+      ctx.font = "600 15px Fredoka, sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillStyle = '#F5F5DC';
+      ctx.fillText("Barcos: " + s.ships.length + " · impactos " + s.hits + "/" + s.totalShipCells + " · fallos " + s.misses, W/2, bottomY);
+    }
+    function onPointerDown(x, y) {
+      if (!s.running) return;
+      const col = Math.floor((x - s.gridX) / s.cellSize);
+      const row = Math.floor((y - s.gridY) / s.cellSize);
+      if (row < 0 || row >= s.size || col < 0 || col >= s.size) return;
+      const cell = s.grid[row][col];
+      if (cell === 'hit' || cell === 'miss') return;
+      if (cell === 'ship') {
+        s.grid[row][col] = 'hit';
+        s.hits++;
+        sfx.coin(); haptic([30, 30]);
+        // ¿barco hundido?
+        const ship = s.ships.find(sh => sh.cells.some(([r, c]) => r === row && c === col));
+        if (ship) {
+          ship.hits++;
+          if (ship.hits >= ship.size) {
+            sfx.win(); haptic([80, 40, 80]);
+          }
+        }
+      } else {
+        s.grid[row][col] = 'miss';
+        s.misses++;
+        sfx.fail(); haptic([40]);
+      }
+      gameScoreEl.textContent = s.hits + "/" + s.totalShipCells;
+      draw();
+      if (s.hits >= s.totalShipCells) {
+        setTimeout(() => finishGame({
+          score: s.hits, unit: "/ " + s.totalShipCells, won: true
+        }), 600);
+      }
+    }
+    GAMES.naval = { start, stop, onPointerDown, onKeyDown() {}, onResize: layout };
+  })();
+
+  // ============================================================
+  //  GAME: Invasores (space invaders old-school) — 3 dificultades
+  // ============================================================
+  (() => {
+    const DIFF = {
+      easy: { rows: 2, cols: 4, speed: 24, dropY: 22, bulletSpeed: 420 },
+      med:  { rows: 3, cols: 5, speed: 36, dropY: 24, bulletSpeed: 480 },
+      hard: { rows: 4, cols: 6, speed: 54, dropY: 28, bulletSpeed: 540 }
+    };
+    const COLORS = ["#F06292","#AB47BC","#4FC3F7","#66BB6A","#FFC107","#FF8A5B"];
     const s = {
       running: false, rafId: null, tLast: 0,
-      playerY: 0, rivalY: 0, finishY: 0,
-      playerV: 0, rivalV: 0,
-      lastTap: 0,
-      taps: 0,
-      finished: false
+      shipX: 0, shipY: 0, shipW: 44, shipH: 24,
+      aliens: [],       // { x, y, w, h, color, alive, baseC, baseR }
+      bullets: [],      // { x, y, vy }
+      dir: 1, speed: 24, bulletSpeed: 420, dropY: 22,
+      cols: 4, rows: 2, cellW: 44, cellH: 32,
+      stepT: 0, stepInterval: 0.9,
+      hits: 0, total: 0,
+      gameOver: false
     };
-    function start() {
-      s.playerY = canvasH - 150;
-      s.rivalY  = canvasH - 150;
-      s.finishY = 100;
-      s.playerV = 0;
-      s.rivalV  = (canvasH - 250) / 10; // llega en ~10s si no haces nada
-      s.taps = 0; s.finished = false;
-      s.lastTap = 0;
-      s.tLast = performance.now();
+    function layout() {
+      s.shipY = canvasH - 60;
+      s.shipX = canvasW / 2;
+    }
+    function start(opts) {
+      const d = DIFF[(opts && opts.difficulty) || "easy"];
+      s.rows = d.rows; s.cols = d.cols;
+      s.speed = d.speed; s.dropY = d.dropY; s.bulletSpeed = d.bulletSpeed;
+      s.dir = 1; s.stepT = 0; s.stepInterval = 0.9;
+      s.hits = 0; s.gameOver = false; s.bullets = [];
+      layout();
+      const margin = 40;
+      s.cellW = (canvasW - margin * 2) / s.cols;
+      s.cellH = 34;
+      s.aliens = [];
+      for (let r = 0; r < s.rows; r++) {
+        for (let c = 0; c < s.cols; c++) {
+          s.aliens.push({
+            x: margin + c * s.cellW + s.cellW / 2,
+            y: 120 + r * (s.cellH + 8),
+            w: s.cellW * 0.72,
+            h: 22,
+            color: COLORS[r % COLORS.length],
+            alive: true
+          });
+        }
+      }
+      s.total = s.aliens.length;
       s.running = true;
+      s.tLast = performance.now();
+      gameScoreEl.textContent = s.hits + "/" + s.total;
       s.rafId = requestAnimationFrame(loop);
     }
     function stop() {
@@ -2825,80 +3178,118 @@
       if (!s.running) return;
       const dt = Math.min(0.05, (now - s.tLast) / 1000);
       s.tLast = now;
-      // Decaimiento de velocidad del jugador
-      s.playerV *= Math.pow(0.3, dt); // decae rápido sin taps
-      s.playerY -= s.playerV * dt;
-      s.rivalY  -= s.rivalV  * dt;
-      // Fin de carrera
-      if (!s.finished) {
-        if (s.playerY <= s.finishY) {
-          s.finished = true;
-          setTimeout(() => finishGame({
-            score: s.taps, unit: "pulsos", won: true
-          }), 400);
-        } else if (s.rivalY <= s.finishY) {
-          s.finished = true;
-          setTimeout(() => finishGame({
-            score: s.taps, unit: "pulsos", won: false
-          }), 400);
+      // Mover aliens horizontalmente
+      s.stepT += dt;
+      let hitEdge = false;
+      for (const a of s.aliens) {
+        if (!a.alive) continue;
+        a.x += s.dir * s.speed * dt;
+        if (a.x + a.w/2 > canvasW - 20 || a.x - a.w/2 < 20) hitEdge = true;
+      }
+      if (hitEdge) {
+        s.dir *= -1;
+        for (const a of s.aliens) if (a.alive) a.y += s.dropY;
+      }
+      // Mover balas
+      for (const b of s.bullets) b.y -= s.bulletSpeed * dt;
+      s.bullets = s.bullets.filter(b => b.y > 0);
+      // Colisiones
+      for (const b of s.bullets) {
+        for (const a of s.aliens) {
+          if (!a.alive) continue;
+          if (b.x > a.x - a.w/2 && b.x < a.x + a.w/2 &&
+              b.y > a.y - a.h/2 && b.y < a.y + a.h/2) {
+            a.alive = false;
+            b.y = -1;
+            s.hits++;
+            sfx.coin(); haptic(20);
+            gameScoreEl.textContent = s.hits + "/" + s.total;
+          }
         }
       }
-      gameScoreEl.textContent = s.taps + " pulsos";
+      s.bullets = s.bullets.filter(b => b.y > 0);
+      // Victoria
+      if (!s.gameOver && s.hits >= s.total) {
+        s.gameOver = true;
+        setTimeout(() => finishGame({
+          score: s.hits, unit: "/ " + s.total, won: true
+        }), 500);
+      }
+      // Derrota: alien baja hasta la nave
+      for (const a of s.aliens) {
+        if (a.alive && a.y + a.h/2 >= s.shipY - 10) {
+          if (!s.gameOver) {
+            s.gameOver = true;
+            sfx.fail();
+            setTimeout(() => finishGame({
+              score: s.hits, unit: "/ " + s.total, won: false
+            }), 400);
+          }
+          break;
+        }
+      }
       draw();
       s.rafId = requestAnimationFrame(loop);
     }
     function draw() {
       const W = canvasW, H = canvasH;
-      // Fondo
-      ctx.fillStyle = "#1E1E2A"; ctx.fillRect(0,0,W,H);
-      // Dos carriles
-      const laneGap = 20;
-      const laneW = (W - laneGap * 3) / 2;
-      const lane1X = laneGap, lane2X = laneGap * 2 + laneW;
-      ctx.fillStyle = "#3B3B4F";
-      roundRect(lane1X, 20, laneW, H - 40, 12); ctx.fill();
-      roundRect(lane2X, 20, laneW, H - 40, 12); ctx.fill();
-      // Línea de meta
-      ctx.fillStyle = "#FFE066";
-      ctx.fillRect(0, s.finishY - 3, W, 6);
-      // Checker
-      ctx.fillStyle = "#FFF";
-      for (let i = 0; i < W; i += 20) {
-        if (Math.floor(i/20) % 2 === 0) ctx.fillRect(i, s.finishY - 3, 10, 6);
+      ctx.fillStyle = "#06060C"; ctx.fillRect(0, 0, W, H);
+      // Estrellas de fondo (fijas)
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      for (let i = 0; i < 30; i++) {
+        const x = (i * 97) % W;
+        const y = (i * 53) % H;
+        ctx.fillRect(x, y, 2, 2);
       }
-      // Etiqueta META
-      ctx.fillStyle = "#FFE066"; ctx.font = "700 16px Fredoka, sans-serif";
-      ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-      ctx.fillText("META", W/2, s.finishY - 10);
-      // Coches
-      drawCar(lane1X + laneW/2, s.playerY, "#E53935", false);
-      drawCar(lane2X + laneW/2, s.rivalY,  "#4FC3F7", false);
-      // Hint tap
-      if (!s.finished) {
-        ctx.fillStyle = "rgba(255,255,255,0.6)";
-        ctx.font = "600 18px Fredoka, sans-serif";
-        ctx.textAlign = "center"; ctx.textBaseline = "bottom";
-        ctx.fillText("👆 Toca rápido para acelerar", W/2, H - 20);
+      // Título
+      ctx.font = "600 20px Fredoka, sans-serif";
+      ctx.fillStyle = "#F5F5DC"; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText("Invasores", W/2, 56);
+      // Aliens (pixel art simple)
+      for (const a of s.aliens) {
+        if (!a.alive) continue;
+        drawAlien(a.x, a.y, a.w, a.h, a.color);
+      }
+      // Nave
+      drawShip(s.shipX, s.shipY);
+      // Balas
+      ctx.fillStyle = "#FFEB3B";
+      for (const b of s.bullets) {
+        ctx.fillRect(b.x - 2, b.y, 4, 10);
       }
     }
-    function onPointerDown() {
-      if (!s.running || s.finished) return;
-      const now = performance.now();
-      const dt = (now - s.lastTap) / 1000;
-      s.lastTap = now;
-      // Cada tap suma velocidad; taps más espaciados cuentan más (anti-mash)
-      const bonus = Math.min(1, dt > 0 ? Math.min(dt, 0.4) / 0.4 : 1);
-      s.playerV += 120 * (0.5 + 0.5 * bonus);
-      s.playerV = Math.min(s.playerV, 400);
-      s.taps++;
+    function drawAlien(cx, cy, w, h, color) {
+      ctx.fillStyle = color;
+      // Cuerpo
+      roundRect(cx - w/2, cy - h/2, w, h, 4); ctx.fill();
+      // Ojos
+      ctx.fillStyle = "#06060C";
+      ctx.fillRect(cx - w*0.22, cy - 2, 4, 4);
+      ctx.fillRect(cx + w*0.22 - 4, cy - 2, 4, 4);
+      // Patitas
+      ctx.fillStyle = color;
+      ctx.fillRect(cx - w*0.4, cy + h/2, 4, 4);
+      ctx.fillRect(cx - 2, cy + h/2, 4, 4);
+      ctx.fillRect(cx + w*0.4 - 4, cy + h/2, 4, 4);
     }
-    GAMES.race = {
-      start, stop, onPointerDown,
-      onKeyDown(e) {
-        if (e.key === " " || e.key === "Enter") onPointerDown();
-      },
-      onResize: () => {}
-    };
+    function drawShip(cx, y) {
+      ctx.fillStyle = "#4FC3F7";
+      ctx.beginPath();
+      ctx.moveTo(cx, y - 14);
+      ctx.lineTo(cx - 20, y + 10);
+      ctx.lineTo(cx + 20, y + 10);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#B3E5FC";
+      ctx.fillRect(cx - 4, y - 8, 8, 10);
+    }
+    function onPointerDown(x) {
+      if (!s.running || s.gameOver) return;
+      s.shipX = Math.max(28, Math.min(canvasW - 28, x));
+      s.bullets.push({ x: s.shipX, y: s.shipY - 16 });
+      haptic(10);
+    }
+    GAMES.invasores = { start, stop, onPointerDown, onKeyDown() {}, onResize: layout };
   })();
 
   // ============================================================
