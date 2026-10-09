@@ -799,10 +799,10 @@
   const STATE_KEY = "funcars.state.v1";
 
   // Estrategia de modos por pase (ADR-19):
-  //   pases 1-2 → texto + sonido  (asocia escritura ↔ sonido)
-  //   pases 3-4 → imagen + sonido (asocia imagen ↔ sonido)
-  //   pase  5   → texto           (consolida la escritura, objetivo final)
-  const PASS_MODES = ["text", "text", "image", "image", "text"];
+  //   pase 1 texto · 2 imagen · 3 texto · 4 imagen · 5 texto
+  //   intercalado → cada palabra se escucha pegada a su escritura
+  //   y a su imagen alternativamente, reforzando el enlace triple.
+  const PASS_MODES = ["text", "image", "text", "image", "text"];
 
   // Modo rápido para pruebas: añade ?fast a la URL y el cooldown
   // pasa de 8h a 10s (sólo para probar la mecánica sin esperar).
