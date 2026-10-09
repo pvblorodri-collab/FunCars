@@ -1,7 +1,7 @@
 // FunCars — service worker mínimo (cache-first con fallback a red)
 // Permite "Añadir a inicio" en móvil y arranque offline tras la primera carga.
 
-const CACHE = "funcars-v1";
+const CACHE = "funcars-v3";
 const ASSETS = [
   "./",
   "./index.html",
