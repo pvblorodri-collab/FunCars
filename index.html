@@ -2588,12 +2588,12 @@
       const b = document.createElement("button");
       b.className = "game-pick";
       b.disabled = !canPlay;
-      const levelBadge = g.levels
-        ? `<span class="pdesc">Nivel ${getGameLevel(g.id)} / ${g.levels}</span>`
-        : `<span class="pdesc">${g.desc}</span>`;
+      const desc = g.levels
+        ? `${g.desc} · ${g.levels} niveles`
+        : g.desc;
       b.innerHTML = `<span class="pico">${g.emoji}</span>
         <span class="pname">${g.name}</span>
-        ${levelBadge}`;
+        <span class="pdesc">${desc}</span>`;
       b.addEventListener("click", () => startGame(g.id));
       gamePicker.appendChild(b);
     }
@@ -2603,6 +2603,9 @@
     overlayPicker.classList.toggle("active", kind === "picker");
     overlayOver.classList.toggle("active",   kind === "over");
   }
+
+  // Nivel que se está jugando AHORA (siempre arranca en 1 al pagar la moneda)
+  let currentPlayLevel = 1;
 
   function startGame(gameId) {
     if (state.coins < 1) return;
@@ -2615,8 +2618,12 @@
     showOverlay(null);
     sfx.start();
     haptic(20);
+    launchLevel(gameId, 1);
+  }
+  function launchLevel(gameId, level) {
+    currentPlayLevel = level;
+    activeGameId = gameId;
     const meta = GAMES_META.find(m => m.id === gameId);
-    const level = meta && meta.levels ? getGameLevel(gameId) : 1;
     const difficulty = ["easy","med","hard"][Math.min(level, 3) - 1];
     gameScoreEl.textContent = meta && meta.levels ? ("Nv " + level + " · 0") : "0";
     GAMES[gameId].start({ difficulty, level, maxLevel: meta && meta.levels });
@@ -2631,25 +2638,24 @@
 
   function finishGame({ score, unit, won }) {
     stopActiveGame();
+    const meta = lastGameId ? GAMES_META.find(m => m.id === lastGameId) : null;
+    const hasLevels = !!(meta && meta.levels);
+    // Auto-avance dentro de la misma partida: 1 moneda = los 3 niveles del tirón
+    if (won && hasLevels && currentPlayLevel < meta.levels) {
+      const nextLevel = currentPlayLevel + 1;
+      showToast("¡Nivel " + nextLevel + "!");
+      sfx.win(); haptic([60, 30, 60]);
+      setTimeout(() => launchLevel(lastGameId, nextLevel), 900);
+      return;
+    }
+    // Final real: perdiste a cualquier nivel, o ganaste el último nivel
     finalScoreEl.textContent = score;
     finalScoreUnit.textContent = unit || "";
-    // Si ganaste un juego con niveles, subir nivel y notificar visualmente
-    let levelUpMsg = "";
-    if (won && lastGameId) {
-      const meta = GAMES_META.find(m => m.id === lastGameId);
-      if (meta && meta.levels) {
-        const r = advanceGameLevel(lastGameId, meta.levels);
-        if (r.next > r.prev) {
-          levelUpMsg = "¡Nivel " + r.next + " desbloqueado!";
-        } else {
-          levelUpMsg = "¡Nivel máximo (" + meta.levels + ") completado!";
-        }
-      }
-    }
+    const fullRun = won && hasLevels && currentPlayLevel >= meta.levels;
     overEmoji.textContent = won ? "🏆" : "💥";
-    overTitle.textContent = won
-      ? (levelUpMsg || "¡Lo lograste!")
-      : "¡Se acabó!";
+    overTitle.textContent = fullRun
+      ? "¡Los 3 niveles!"
+      : (won ? "¡Lo lograste!" : "¡Se acabó!");
     gameWalletEl.textContent = state.coins;
     const disabled = state.coins < 1;
     btnRetry.disabled = disabled;
