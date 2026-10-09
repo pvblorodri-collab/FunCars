@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE98A"/>
+      <stop offset="1" stop-color="#FF8A5B"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="104" fill="url(#sky)"/>
+  <!-- carretera -->
+  <rect x="0" y="340" width="512" height="110" fill="#3B3B4F"/>
+  <rect x="60"  y="388" width="40" height="12" rx="3" fill="#FFE066"/>
+  <rect x="140" y="388" width="40" height="12" rx="3" fill="#FFE066"/>
+  <rect x="220" y="388" width="40" height="12" rx="3" fill="#FFE066"/>
+  <rect x="300" y="388" width="40" height="12" rx="3" fill="#FFE066"/>
+  <rect x="380" y="388" width="40" height="12" rx="3" fill="#FFE066"/>
+  <!-- nubes suaves -->
+  <ellipse cx="110" cy="130" rx="56" ry="18" fill="#fff" opacity="0.75"/>
+  <ellipse cx="400" cy="100" rx="70" ry="20" fill="#fff" opacity="0.75"/>
+  <!-- coche -->
+  <g transform="translate(128,230)">
+    <ellipse cx="128" cy="152" rx="110" ry="10" fill="#000" opacity="0.22"/>
+    <path d="M20,96 Q20,56 60,48 L96,16 Q110,6 128,6 L166,6 Q184,6 198,16 L234,48 Q274,56 274,96 L274,124 Q274,138 258,138 L36,138 Q20,138 20,124 Z"
+          fill="#E53935"/>
+    <path d="M64,48 L104,20 Q114,12 128,12 L166,12 Q180,12 190,20 L230,48 Z"
+          fill="#B0191C"/>
+    <path d="M106,20 L128,20 L128,48 L90,48 Z" fill="#FFF"/>
+    <path d="M136,20 L166,20 L190,48 L136,48 Z" fill="#FFF"/>
+    <circle cx="252" cy="92" r="8" fill="#FFEB3B"/>
+    <rect x="12" y="96" width="12" height="14" rx="3" fill="#8E1618"/>
+    <circle cx="72"  cy="138" r="24" fill="#1E1E2A"/>
+    <circle cx="72"  cy="138" r="10" fill="#777"/>
+    <circle cx="222" cy="138" r="24" fill="#1E1E2A"/>
+    <circle cx="222" cy="138" r="10" fill="#777"/>
+  </g>
+</svg>

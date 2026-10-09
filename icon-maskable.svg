@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Maskable: fondo lleno, icono centrado al 60% para zona segura -->
+  <rect width="512" height="512" fill="#FFE98A"/>
+  <g transform="translate(102,180)">
+    <!-- carretera franja -->
+    <rect x="-102" y="130" width="512" height="80" fill="#3B3B4F"/>
+    <rect x="20"  y="162" width="36" height="10" rx="3" fill="#FFE066"/>
+    <rect x="100" y="162" width="36" height="10" rx="3" fill="#FFE066"/>
+    <rect x="180" y="162" width="36" height="10" rx="3" fill="#FFE066"/>
+    <rect x="260" y="162" width="36" height="10" rx="3" fill="#FFE066"/>
+    <!-- coche -->
+    <g transform="translate(26,0)">
+      <ellipse cx="128" cy="128" rx="110" ry="9" fill="#000" opacity="0.22"/>
+      <path d="M20,80 Q20,42 60,34 L96,4 Q108,-4 128,-4 L166,-4 Q184,-4 198,4 L234,34 Q274,42 274,80 L274,108 Q274,122 258,122 L36,122 Q20,122 20,108 Z"
+            fill="#E53935"/>
+      <path d="M64,34 L104,8 Q114,0 128,0 L166,0 Q180,0 190,8 L230,34 Z"
+            fill="#B0191C"/>
+      <path d="M106,6 L128,6 L128,34 L90,34 Z" fill="#FFF"/>
+      <path d="M136,6 L166,6 L190,34 L136,34 Z" fill="#FFF"/>
+      <circle cx="252" cy="76" r="7" fill="#FFEB3B"/>
+      <circle cx="72"  cy="122" r="22" fill="#1E1E2A"/>
+      <circle cx="72"  cy="122" r="9"  fill="#777"/>
+      <circle cx="222" cy="122" r="22" fill="#1E1E2A"/>
+      <circle cx="222" cy="122" r="9"  fill="#777"/>
+    </g>
+  </g>
+</svg>

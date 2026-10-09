@@ -1,0 +1,17 @@
+{
+  "name": "FunCars",
+  "short_name": "FunCars",
+  "description": "Aprende a leer con el método Doman y mini-juegos de coches.",
+  "lang": "es-ES",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFE98A",
+  "theme_color": "#E53935",
+  "icons": [
+    { "src": "./icon.svg",           "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-maskable.svg",  "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "categories": ["education", "games", "kids"]
+}
