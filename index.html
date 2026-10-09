@@ -266,7 +266,6 @@
   .hero-wrap .scene-brand {
     position: absolute;
     top: 50%; left: 50%;
-    transform: translate(-50%, -62%);
     font-family: "Pixelify Sans", "Fredoka", sans-serif;
     font-weight: 700;
     font-size: clamp(2.4rem, 10vw, 3.6rem);
@@ -275,6 +274,14 @@
     text-shadow: 0 3px 0 rgba(0,0,0,0.08);
     pointer-events: none;
     white-space: nowrap;
+    animation: brandBounce 1.6s ease-in-out infinite;
+  }
+  @keyframes brandBounce {
+    0%, 100% { transform: translate(-50%, -62%) translateY(0); }
+    50%      { transform: translate(-50%, -62%) translateY(-8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-wrap .scene-brand { animation: none; transform: translate(-50%, -62%); }
   }
   .hero-wrap .scene-brand .fun  { color: var(--brand-fun); }
   .hero-wrap .scene-brand .cars { color: var(--brand-cars); }
@@ -369,23 +376,9 @@
     box-shadow: 0 5px 0 rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.18);
     position: relative;
     min-height: 128px;
-    opacity: 0;
-    transform: translateY(8px);
-    animation: tileIn 0.7s var(--ease-out) forwards;
+    /* Sin animación de entrada: aparecen tal cual.
+       El único movimiento ahora es al pulsar (:active) */
   }
-  @keyframes tileIn {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .batch-tile:nth-child(1)  { animation-delay: 0ms; }
-  .batch-tile:nth-child(2)  { animation-delay: 90ms; }
-  .batch-tile:nth-child(3)  { animation-delay: 180ms; }
-  .batch-tile:nth-child(4)  { animation-delay: 270ms; }
-  .batch-tile:nth-child(5)  { animation-delay: 360ms; }
-  .batch-tile:nth-child(6)  { animation-delay: 450ms; }
-  .batch-tile:nth-child(7)  { animation-delay: 540ms; }
-  .batch-tile:nth-child(8)  { animation-delay: 630ms; }
-  .batch-tile:nth-child(9)  { animation-delay: 720ms; }
-  .batch-tile:nth-child(10) { animation-delay: 810ms; }
   /* La "pila" debajo: dos pseudo-elementos simulan cartas apiladas */
   .batch-tile::before,
   .batch-tile::after {
@@ -1392,13 +1385,13 @@
   // ============================================================
   //  CONFIG
   // ============================================================
-  const CARD_MS       = 1000;
-  const PAUSE_MS      = 150;
+  const CARD_MS       = 1400;    // más tiempo para que la voz termine
+  const PAUSE_MS      = 180;
   const PASS_PAUSE_MS = 500;
   const PASSES        = 5;
   const COINS_PER_SESSION = 3;
   const SESSIONS_TO_MASTER = 15;
-  const MAX_ACTIVE_BATCHES = 2;
+  const MAX_ACTIVE_BATCHES = 3;        // más libertad: hasta 3 lotes a la vez
   const STATE_KEY = "funcars.state.v1";
 
   // Estrategia de modos por pase (ADR-19):
@@ -1408,9 +1401,9 @@
   const PASS_MODES = ["text", "image", "text", "image", "text"];
 
   // Modo rápido para pruebas: añade ?fast a la URL y el cooldown
-  // pasa de 8h a 10s (sólo para probar la mecánica sin esperar).
+  // pasa de 3h a 10s (sólo para probar la mecánica sin esperar).
   const FAST_MODE = new URLSearchParams(location.search).has("fast");
-  const COOLDOWN_MS = FAST_MODE ? 10 * 1000 : 8 * 60 * 60 * 1000;
+  const COOLDOWN_MS = FAST_MODE ? 10 * 1000 : 3 * 60 * 60 * 1000;
 
   // Emoji por lote (visual, cero semántica — solo decorar la tile)
   const BATCH_EMOJI = {
@@ -2142,7 +2135,8 @@
   const GAMES_META = [
     { id: "runner",  name: "Runner",  emoji: "🏎️", desc: "Esquiva coches" },
     { id: "parking", name: "Parking", emoji: "🅿️",  desc: "Recuerda dónde iban" },
-    { id: "race",    name: "Carrera", emoji: "🏁", desc: "Toca para acelerar" }
+    { id: "race",    name: "Carrera", emoji: "🏁", desc: "Toca para acelerar" },
+    { id: "sopa",    name: "Sopa",    emoji: "🔤", desc: "Busca las palabras" }
   ];
   const GAMES = {}; // id -> { start, stop, onPointerDown }
   let activeGameId = null;    // juego actualmente corriendo (null si no hay)
@@ -2643,6 +2637,239 @@
       },
       onResize: () => {}
     };
+  })();
+
+  // ============================================================
+  //  GAME: Sopa de letras (palabras ya vistas por el niño)
+  // ============================================================
+  (() => {
+    const GRID = 5;
+    const ALPHABET = "abcdefghilmnoprstu";
+
+    const s = {
+      grid: [],
+      targets: [],       // { word, cells:[[r,c]..], found }
+      startCell: null,
+      cellSize: 0, gridX: 0, gridY: 0,
+      found: 0,
+      running: false,
+      noWords: false
+    };
+
+    function vocabulary() {
+      if (!catalog) return [];
+      const used = new Set(state.sessions.map(x => x.batch_id));
+      const words = new Set();
+      for (const b of catalog.batches) {
+        if (!used.has(b.id)) continue;
+        for (const c of b.cards) {
+          const w = (c.text || "").toLowerCase();
+          // palabras simples sin tildes para evitar celdas no-ASCII
+          const flat = w.replace(/[áàä]/g,"a").replace(/[éèë]/g,"e")
+                        .replace(/[íìï]/g,"i").replace(/[óòö]/g,"o")
+                        .replace(/[úùü]/g,"u").replace(/ñ/g,"n");
+          if (flat.length >= 3 && flat.length <= GRID && /^[a-z]+$/.test(flat)) {
+            words.add(flat);
+          }
+        }
+      }
+      return [...words];
+    }
+
+    function layout() {
+      const availW = canvasW - 32;
+      const availH = canvasH - 260;
+      const cs = Math.floor(Math.min(availW / GRID, availH / GRID));
+      s.cellSize = Math.max(44, cs);
+      const gridW = s.cellSize * GRID;
+      s.gridX = (canvasW - gridW) / 2;
+      s.gridY = 110;
+    }
+
+    function tryPlace(grid, word, dir, r, c) {
+      const cells = [];
+      for (let i = 0; i < word.length; i++) {
+        const rr = dir === 'V' ? r + i : r;
+        const cc = dir === 'H' ? c + i : c;
+        if (rr >= GRID || cc >= GRID) return null;
+        const existing = grid[rr][cc];
+        if (existing && existing !== word[i]) return null;
+        cells.push([rr, cc]);
+      }
+      for (let i = 0; i < cells.length; i++) grid[cells[i][0]][cells[i][1]] = word[i];
+      return cells;
+    }
+
+    function buildGrid(words) {
+      const grid = Array.from({length: GRID}, () => Array(GRID).fill(null));
+      const targets = [];
+      for (const w of words) {
+        for (let tries = 0; tries < 80; tries++) {
+          const dir = Math.random() < 0.5 ? 'H' : 'V';
+          const r = Math.floor(Math.random() * GRID);
+          const c = Math.floor(Math.random() * GRID);
+          const cells = tryPlace(grid, w, dir, r, c);
+          if (cells) { targets.push({ word: w, cells, found: false }); break; }
+        }
+      }
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          if (!grid[r][c]) grid[r][c] = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+        }
+      }
+      return { grid, targets };
+    }
+
+    function start() {
+      layout();
+      const vocab = vocabulary();
+      s.noWords = vocab.length < 3;
+      s.running = true;
+      s.startCell = null;
+      s.found = 0;
+      if (s.noWords) { draw(); return; }
+      const picks = shuffle(vocab).slice(0, 3);
+      const built = buildGrid(picks);
+      s.grid = built.grid;
+      s.targets = built.targets;
+      gameScoreEl.textContent = s.found + "/" + s.targets.length;
+      draw();
+    }
+
+    function stop() { s.running = false; }
+
+    function pointInCell(x, y) {
+      const col = Math.floor((x - s.gridX) / s.cellSize);
+      const row = Math.floor((y - s.gridY) / s.cellSize);
+      if (row < 0 || row >= GRID || col < 0 || col >= GRID) return null;
+      return [row, col];
+    }
+
+    function cellsBetween(a, b) {
+      if (a[0] === b[0]) {
+        const r = a[0];
+        const [c1, c2] = a[1] < b[1] ? [a[1], b[1]] : [b[1], a[1]];
+        const out = [];
+        for (let c = c1; c <= c2; c++) out.push([r, c]);
+        return out;
+      }
+      if (a[1] === b[1]) {
+        const c = a[1];
+        const [r1, r2] = a[0] < b[0] ? [a[0], b[0]] : [b[0], a[0]];
+        const out = [];
+        for (let r = r1; r <= r2; r++) out.push([r, c]);
+        return out;
+      }
+      return null;
+    }
+
+    function wordFromCells(cells) {
+      return cells.map(([r, c]) => s.grid[r][c]).join("");
+    }
+
+    function onPointerDown(x, y) {
+      if (!s.running || s.noWords) return;
+      const cell = pointInCell(x, y);
+      if (!cell) return;
+      if (!s.startCell) {
+        s.startCell = cell;
+        haptic(8);
+        draw();
+        return;
+      }
+      if (s.startCell[0] === cell[0] && s.startCell[1] === cell[1]) {
+        s.startCell = null;
+        draw();
+        return;
+      }
+      const cells = cellsBetween(s.startCell, cell);
+      if (!cells) { s.startCell = cell; draw(); return; }
+      const w   = wordFromCells(cells);
+      const rev = wordFromCells(cells.slice().reverse());
+      const hit = s.targets.find(t => !t.found && (t.word === w || t.word === rev));
+      if (hit) {
+        hit.found = true;
+        s.found++;
+        s.startCell = null;
+        gameScoreEl.textContent = s.found + "/" + s.targets.length;
+        sfx.coin(); haptic([30, 30, 30]);
+        speak(hit.word);
+        draw();
+        if (s.found >= s.targets.length) {
+          setTimeout(() => finishGame({
+            score: s.found, unit: "/ " + s.targets.length, won: true
+          }), 800);
+        }
+      } else {
+        sfx.fail(); haptic([80]);
+        s.startCell = null;
+        draw();
+      }
+    }
+
+    function wrapText(text, cx, cy, maxWidth, lineHeight) {
+      const words = text.split(" ");
+      const lines = [];
+      let line = "";
+      for (const w of words) {
+        const test = line ? line + " " + w : w;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line); line = w;
+        } else { line = test; }
+      }
+      if (line) lines.push(line);
+      const yStart = cy - (lines.length - 1) * lineHeight / 2;
+      for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], cx, yStart + i * lineHeight);
+      }
+    }
+
+    function draw() {
+      const W = canvasW, H = canvasH;
+      ctx.fillStyle = "#1E1E2A"; ctx.fillRect(0, 0, W, H);
+      if (s.noWords) {
+        ctx.fillStyle = "#FFF";
+        ctx.font = "600 20px Fredoka, sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        wrapText("Lee más sesiones para desbloquear la sopa de letras", W/2, H/2, W - 48, 28);
+        return;
+      }
+      ctx.font = "600 20px Fredoka, sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillStyle = "#FFF";
+      ctx.fillText("Encuentra las palabras", W/2, 56);
+
+      const cs = s.cellSize;
+      for (let r = 0; r < GRID; r++) {
+        for (let c = 0; c < GRID; c++) {
+          const x = s.gridX + c * cs;
+          const y = s.gridY + r * cs;
+          const isFound = s.targets.some(t => t.found && t.cells.some(([tr, tc]) => tr===r && tc===c));
+          const isStart = s.startCell && s.startCell[0]===r && s.startCell[1]===c;
+          if (isFound)      ctx.fillStyle = "#66BB6A";
+          else if (isStart) ctx.fillStyle = "#4FC3F7";
+          else              ctx.fillStyle = "#FFFDF7";
+          roundRect(x + 3, y + 3, cs - 6, cs - 6, 8); ctx.fill();
+          ctx.fillStyle = (isFound || isStart) ? "#FFF" : "#D32F2F";
+          ctx.font = `700 ${Math.floor(cs * 0.55)}px Fredoka, sans-serif`;
+          ctx.textBaseline = "middle";
+          ctx.fillText(s.grid[r][c], x + cs/2, y + cs/2 + 2);
+        }
+      }
+
+      const listY = s.gridY + cs * GRID + 24;
+      ctx.font = "600 16px Fredoka, sans-serif";
+      ctx.textBaseline = "top";
+      const slotW = (W - 40) / Math.max(s.targets.length, 1);
+      for (let i = 0; i < s.targets.length; i++) {
+        const t = s.targets[i];
+        const tx = 20 + slotW * i + slotW / 2;
+        ctx.fillStyle = t.found ? "#66BB6A" : "#F5F5DC";
+        ctx.fillText((t.found ? "✓ " : "") + t.word, tx, listY);
+      }
+    }
+
+    GAMES.sopa = { start, stop, onPointerDown, onKeyDown() {}, onResize: layout };
   })();
 
   async function loadCatalog() {
