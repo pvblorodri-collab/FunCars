@@ -286,8 +286,31 @@
     font-weight: 600;
     text-align: center;
     line-height: 1;
-    font-size: clamp(5rem, 26vw, 20rem);
     letter-spacing: -0.02em;
+  }
+  #cardText.text-mode {
+    font-size: clamp(5rem, 26vw, 20rem);
+  }
+  #cardText.image-mode {
+    font-size: clamp(8rem, 40vw, 28rem);
+    color: var(--ink);
+    font-weight: 400;
+  }
+  #passLabel {
+    position: absolute;
+    top: 90px; left: 0; right: 0;
+    text-align: center;
+    pointer-events: none;
+    display: inline-flex;
+    justify-content: center;
+  }
+  #passLabel .lbl {
+    background: rgba(0,0,0,0.06);
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
   }
   #progress {
     position: absolute;
@@ -499,17 +522,23 @@
     background: #FFFDF7;
     border: 2px solid rgba(255,255,255,0.9);
     border-radius: 16px;
-    padding: 18px 10px;
+    padding: 14px 10px;
     text-align: center;
     cursor: pointer;
     font-weight: 600;
     color: var(--doman-red);
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     letter-spacing: -0.01em;
     box-shadow: 0 4px 0 rgba(0,0,0,0.06);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
   }
+  .word-card .wc-emoji { font-size: 2rem; line-height: 1; }
+  .word-card.speaking .wc-emoji { filter: brightness(0) invert(1); }
   .word-card:active {
     transform: translateY(2px);
     box-shadow: 0 2px 0 rgba(0,0,0,0.06);
@@ -679,7 +708,8 @@
   <div class="session-inner">
     <div id="progress"></div>
     <div id="sessionTitle"></div>
-    <div id="cardText">—</div>
+    <div id="passLabel"><span class="lbl" id="passLabelInner">Lectura</span></div>
+    <div id="cardText" class="text-mode">—</div>
   </div>
 </section>
 
@@ -767,6 +797,12 @@
   const SESSIONS_TO_MASTER = 15;
   const MAX_ACTIVE_BATCHES = 2;
   const STATE_KEY = "funcars.state.v1";
+
+  // Estrategia de modos por pase (ADR-19):
+  //   pases 1-2 → texto + sonido  (asocia escritura ↔ sonido)
+  //   pases 3-4 → imagen + sonido (asocia imagen ↔ sonido)
+  //   pase  5   → texto           (consolida la escritura, objetivo final)
+  const PASS_MODES = ["text", "text", "image", "image", "text"];
 
   // Modo rápido para pruebas: añade ?fast a la URL y el cooldown
   // pasa de 8h a 10s (sólo para probar la mecánica sin esperar).
@@ -900,6 +936,7 @@
   const cardText      = document.getElementById("cardText");
   const progress      = document.getElementById("progress");
   const sessionTitle  = document.getElementById("sessionTitle");
+  const passLabelInner = document.getElementById("passLabelInner");
   const doneMsg       = document.getElementById("doneMsg");
   const masteredBadge = document.getElementById("masteredBadge");
   const btnAgain      = document.getElementById("btnAgain");
@@ -1019,7 +1056,7 @@
       for (const c of b.cards) {
         const w = document.createElement("div");
         w.className = "word-card";
-        w.textContent = c.text;
+        w.innerHTML = `<span class="wc-emoji">${c.emoji || ""}</span><span class="wc-text">${c.text}</span>`;
         w.addEventListener("click", () => tapWord(w, c.text));
         grid.appendChild(w);
       }
@@ -1160,17 +1197,29 @@
     runSession();
   }
 
+  function setCardMode(mode) {
+    cardText.classList.toggle("text-mode",  mode === "text");
+    cardText.classList.toggle("image-mode", mode === "image");
+    passLabelInner.textContent = mode === "image" ? "Imagen" : "Lectura";
+  }
+
   async function runSession() {
     running = true;
     show("session");
 
-    const words = currentBatch.cards.map(c => c.text);
+    const cards = currentBatch.cards; // {text, emoji}
     for (let pass = 0; pass < PASSES; pass++) {
       renderProgress(pass);
-      const order = shuffle(words);
-      for (const word of order) {
-        cardText.textContent = word;
-        speak(word);
+      const mode = PASS_MODES[pass] || "text";
+      setCardMode(mode);
+      const order = shuffle(cards);
+      for (const c of order) {
+        if (mode === "image") {
+          cardText.textContent = c.emoji || c.text;
+        } else {
+          cardText.textContent = c.text;
+        }
+        speak(c.text);
         await sleep(CARD_MS);
         cardText.textContent = "";
         await sleep(PAUSE_MS);
