@@ -16,8 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --doman-red: #E53935;
-    --doman-red-dark: #B0191C;
+    --doman-red: #D32F2F;        /* WCAG AA con blanco (4.6:1) */
+    --doman-red-dark: #9B1C1F;
     --sky-1: #FFE98A;
     --sky-2: #FFC46B;
     --sky-3: #FF8A5B;
@@ -25,7 +25,8 @@
     --road-stripe: #FFE066;
     --cream:  #FFF8EC;
     --ink:    #1E1E2A;
-    --muted:  #6b6b7a;
+    --muted:  #3B3B4F;           /* oscurecido para contraste sobre gradiente */
+    --muted-soft: #6b6b7a;       /* para texto sobre fondo blanco únicamente */
     --accent-blue: #4FC3F7;
     --accent-green: #66BB6A;
     --accent-purple: #AB47BC;
@@ -55,6 +56,7 @@
   .screen {
     display: none;
     min-height: 100vh;
+    padding-top: 4px;    /* respira contra el borde superior */
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.16s var(--ease-smooth), transform 0.16s var(--ease-smooth);
@@ -111,8 +113,8 @@
     animation: slotFlash 0.5s 0.9s var(--ease-smooth);
   }
   @keyframes slotFlash {
-    0%   { background: #0B0B14; box-shadow: inset 0 2px 3px rgba(0,0,0,0.6); }
-    40%  { background: #FFEB3B; box-shadow: 0 0 24px 4px rgba(255,235,59,0.9); }
+    0%   { background: #0B0B14; }
+    40%  { background: #FFEB3B; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
     100% { background: #0B0B14; box-shadow: inset 0 2px 3px rgba(0,0,0,0.6); }
   }
   .coin-machine .screen-mini {
@@ -150,7 +152,7 @@
     font-weight: 800;
     color: #8E5A00;
     font-size: 1.4rem;
-    animation: coinDrop 1s cubic-bezier(.3,.1,.4,1.4) forwards;
+    animation: coinDrop 1s cubic-bezier(.76,0,.24,1) forwards;
   }
   .coin-machine .coin::before { content: "€"; }
   @keyframes coinDrop {
@@ -212,7 +214,10 @@
     letter-spacing: 0;
     line-height: 1;
   }
-  .brand .fun { color: var(--doman-red); }
+  /* .fun pintado con rojo profundo (#B71C1C) porque la marca cae sobre
+     el gradiente naranja; sobre blanco #D32F2F sigue siendo el color
+     de marca (botones, texto Doman, tiles). */
+  .brand .fun  { color: #B71C1C; }
   .brand .cars { color: var(--road); }
   .wallet {
     background: #fff;
@@ -257,12 +262,8 @@
     pointer-events: none;
     opacity: 0.9;
   }
-  .float-cloud.c1 { animation: floatCloud 24s linear infinite; }
-  .float-cloud.c2 { animation: floatCloud 32s linear infinite 6s; }
-  @keyframes floatCloud {
-    0%   { transform: translateX(-120%); }
-    100% { transform: translateX(220%); }
-  }
+  .float-cloud.c1 { left: 8%;  }
+  .float-cloud.c2 { left: 62%; }
   @keyframes bounce {
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50%      { transform: translateX(-50%) translateY(-6px); }
@@ -430,12 +431,15 @@
     justify-content: center;
     color: var(--doman-red);
     font-weight: 700;
-    font-size: clamp(1.9rem, 7vw, 2.6rem);
+    font-size: clamp(1.6rem, 6.5vw, 2.5rem);
     letter-spacing: -0.03em;
     line-height: 1;
     text-align: center;
-    padding: 6px 0;
+    padding: 6px 4px;
     transition: transform 0.2s var(--ease-pop);
+    overflow-wrap: break-word;
+    text-wrap: balance;
+    max-width: 100%;
   }
   .batch-tile:active .tile-headword { transform: scale(1.08); }
   .batch-tile .tile-name {
@@ -457,7 +461,6 @@
     background: linear-gradient(90deg, var(--doman-red), #FF6B6B);
     border-radius: 3px;
     transition: width 0.6s var(--ease-smooth);
-    box-shadow: 0 0 8px rgba(229,57,53,0.4);
   }
   .batch-tile[data-state="mastered"] .tile-progress-fill {
     background: var(--doman-red-dark);
@@ -488,7 +491,10 @@
     letter-spacing: -0.02em;
   }
   #cardText.text-mode {
-    font-size: clamp(5rem, 26vw, 20rem);
+    font-size: clamp(4rem, 24vw, 18rem);
+    padding: 0 16px;
+    overflow-wrap: break-word;
+    text-wrap: balance;
   }
   #cardText.image-mode {
     font-size: clamp(8rem, 40vw, 28rem);
@@ -609,8 +615,9 @@
     font-family: inherit;
     font-weight: 700;
     color: var(--doman-red);
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 6vw, 2rem);
     letter-spacing: -0.02em;
+    overflow-wrap: break-word;
     box-shadow: 0 5px 0 rgba(0,0,0,0.08);
     transition: transform 120ms var(--ease-out), background 180ms var(--ease-out), border-color 180ms var(--ease-out), box-shadow 120ms var(--ease-out);
     opacity: 0;
@@ -733,7 +740,7 @@
     font-family: inherit;
     cursor: pointer;
     letter-spacing: 0.01em;
-    box-shadow: 0 8px 0 var(--doman-red-dark), 0 12px 20px rgba(176,25,28,0.28);
+    box-shadow: 0 8px 0 var(--doman-red-dark), 0 10px 20px rgba(0,0,0,0.14);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
     display: inline-flex;
     align-items: center;
@@ -741,7 +748,7 @@
   }
   .big-btn:active {
     transform: translateY(5px) scale(0.97);
-    box-shadow: 0 3px 0 var(--doman-red-dark), 0 4px 8px rgba(176,25,28,0.2);
+    box-shadow: 0 3px 0 var(--doman-red-dark), 0 4px 8px rgba(0,0,0,0.1);
     transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
   }
   .big-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -999,6 +1006,14 @@
     align-items: center;
   }
   .game-overlay .btn-ghost { color: rgba(255,255,255,0.65); }
+  /* En overlays de juego (fondo oscuro) el shadow rojo del big-btn
+     se lee como glow. Sombra neutra sólo en ese contexto. */
+  .game-overlay .big-btn {
+    box-shadow: 0 8px 0 rgba(0,0,0,0.42), 0 10px 20px rgba(0,0,0,0.26);
+  }
+  .game-overlay .big-btn:active {
+    box-shadow: 0 3px 0 rgba(0,0,0,0.42), 0 4px 8px rgba(0,0,0,0.2);
+  }
 
   /* Picker de juegos */
   .game-picker {
