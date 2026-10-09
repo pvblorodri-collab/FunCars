@@ -973,13 +973,41 @@
     });
   }
   function speak(text) {
+    if (!text || !("speechSynthesis" in window)) return;
     try {
+      // Vaciar la cola, pero dar un micro-delay antes del nuevo speak:
+      // sin este tick, Chrome a veces ignora el speak() que llega
+      // demasiado pegado al cancel() y la palabra "no suena".
       speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "es-ES"; u.rate = 0.95; u.pitch = 1.0;
-      if (voice) u.voice = voice;
-      speechSynthesis.speak(u);
+      setTimeout(() => {
+        try {
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = "es-ES";
+          u.rate = 1.0;
+          u.pitch = 1.0;
+          if (voice) u.voice = voice;
+          speechSynthesis.speak(u);
+        } catch (e) {}
+      }, 12);
     } catch (e) {}
+  }
+
+  // Workaround del bug de Chrome: tras ~15s hablando seguido el motor
+  // se congela hasta que haces un pause/resume. Lo mantenemos vivo
+  // sólo durante una sesión (lo apagamos al terminar).
+  let ttsPump = null;
+  function startTTSPump() {
+    stopTTSPump();
+    if (!("speechSynthesis" in window)) return;
+    ttsPump = setInterval(() => {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.pause();
+        speechSynthesis.resume();
+      }
+    }, 10000);
+  }
+  function stopTTSPump() {
+    if (ttsPump) { clearInterval(ttsPump); ttsPump = null; }
   }
 
   // ============================================================
@@ -1213,6 +1241,7 @@
   async function runSession() {
     running = true;
     show("session");
+    startTTSPump();
 
     const cards = currentBatch.cards; // {text, emoji}
     for (let pass = 0; pass < PASSES; pass++) {
@@ -1235,6 +1264,8 @@
     }
     renderProgress(PASSES);
     running = false;
+    stopTTSPump();
+    try { speechSynthesis.cancel(); } catch(e){}
 
     const { justMastered } = completeSession(state, currentBatch.id);
     renderWallet();
