@@ -34,6 +34,7 @@
     --card-border: rgba(255,255,255,0.9);
     --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -56,16 +57,16 @@
     min-height: 100vh;
     opacity: 0;
     transform: translateY(8px);
-    transition: opacity 0.28s var(--ease-smooth), transform 0.28s var(--ease-smooth);
+    transition: opacity 0.16s var(--ease-smooth), transform 0.16s var(--ease-smooth);
   }
   .screen.active {
     display: block;
     opacity: 1;
     transform: translateY(0);
-    animation: screenIn 0.32s var(--ease-smooth);
+    animation: screenIn 0.28s var(--ease-out);
   }
   @keyframes screenIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
@@ -287,11 +288,27 @@
     flex-direction: column;
     gap: 6px;
     cursor: pointer;
-    transition: transform 0.18s var(--ease-pop), box-shadow 0.18s var(--ease-smooth);
+    transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
     box-shadow: 0 6px 0 rgba(0,0,0,0.09), 0 10px 24px rgba(176,25,28,0.06);
     position: relative;
     min-height: 190px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: tileIn 0.32s var(--ease-out) forwards;
   }
+  @keyframes tileIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .batch-tile:nth-child(1)  { animation-delay: 0ms; }
+  .batch-tile:nth-child(2)  { animation-delay: 40ms; }
+  .batch-tile:nth-child(3)  { animation-delay: 80ms; }
+  .batch-tile:nth-child(4)  { animation-delay: 120ms; }
+  .batch-tile:nth-child(5)  { animation-delay: 160ms; }
+  .batch-tile:nth-child(6)  { animation-delay: 200ms; }
+  .batch-tile:nth-child(7)  { animation-delay: 240ms; }
+  .batch-tile:nth-child(8)  { animation-delay: 280ms; }
+  .batch-tile:nth-child(9)  { animation-delay: 320ms; }
+  .batch-tile:nth-child(10) { animation-delay: 360ms; }
   /* La "pila" debajo: dos pseudo-elementos simulan cartas apiladas */
   .batch-tile::before,
   .batch-tile::after {
@@ -307,8 +324,9 @@
   .batch-tile::before { transform: translate(3px, 4px) rotate(2.6deg); }
   .batch-tile::after  { transform: translate(7px, 8px) rotate(5.2deg); background: #FFF5DB; }
   .batch-tile:active {
-    transform: translateY(2px);
+    transform: translateY(2px) scale(0.98);
     box-shadow: 0 3px 0 rgba(0,0,0,0.09);
+    transition: transform 100ms var(--ease-out), box-shadow 100ms var(--ease-out);
   }
   .batch-tile:active::before { transform: translate(5px, 2px) rotate(3.6deg); }
   .batch-tile:active::after  { transform: translate(10px, 4px) rotate(7deg); }
@@ -523,6 +541,125 @@
     pointer-events: none;
   }
 
+  /* ====================  MATCH (unir palabra con imagen)  ==================== */
+  #match {
+    background: #FFFDF7;
+  }
+  #match .match-inner {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 40px;
+    gap: 32px;
+    position: relative;
+  }
+  #match .match-progress {
+    position: absolute;
+    top: 24px; left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    pointer-events: none;
+  }
+  #match .match-progress .md {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #F0E6D2;
+    transition: all 0.3s var(--ease-pop);
+  }
+  #match .match-progress .md.done { background: var(--accent-green); }
+  #match .match-progress .md.active {
+    background: var(--doman-red);
+    transform: scale(1.3);
+    box-shadow: 0 0 0 6px rgba(229,57,53,0.18);
+  }
+  #match .match-prompt {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 20px;
+  }
+  #match .match-emoji {
+    font-size: clamp(7rem, 32vw, 14rem);
+    line-height: 1;
+    user-select: none;
+    animation: matchEmojiIn 0.35s var(--ease-pop);
+  }
+  @keyframes matchEmojiIn {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  #match .match-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 360px;
+  }
+  #match .match-opt {
+    background: #fff;
+    border: 2px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 22px 20px;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    color: var(--doman-red);
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.08);
+    transition: transform 120ms var(--ease-out), background 180ms var(--ease-out), border-color 180ms var(--ease-out), box-shadow 120ms var(--ease-out);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: optIn 0.28s var(--ease-out) forwards;
+  }
+  @keyframes optIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #match .match-opt:nth-child(1) { animation-delay: 0ms; }
+  #match .match-opt:nth-child(2) { animation-delay: 60ms; }
+  #match .match-opt:nth-child(3) { animation-delay: 120ms; }
+  #match .match-opt:active {
+    transform: translateY(2px) scale(0.97);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+  }
+  #match .match-opt.correct {
+    background: #E8F5E9;
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    animation: matchCorrect 0.5s var(--ease-pop);
+  }
+  @keyframes matchCorrect {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  #match .match-opt.wrong {
+    background: #FFEBEE;
+    border-color: var(--doman-red);
+    animation: matchWrong 0.4s;
+  }
+  @keyframes matchWrong {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+  }
+  #match .match-result {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+  #match .match-result.show { display: flex; animation: fadeInUp 0.4s var(--ease-smooth); }
+  #match .match-result .big-emoji { font-size: 4.5rem; line-height: 1; }
+  #match .match-result .score-line { font-size: 1.3rem; font-weight: 700; }
+  #match .match-result .sub { color: var(--muted); font-weight: 500; }
+
   /* ====================  DONE  ==================== */
   #done .done-inner {
     min-height: 100vh;
@@ -540,7 +677,7 @@
     filter: drop-shadow(0 10px 20px rgba(255,193,7,0.5));
   }
   @keyframes trophy {
-    0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+    0%   { transform: scale(0.3) rotate(-30deg); opacity: 0; }
     50%  { transform: scale(1.3) rotate(10deg); opacity: 1; }
     75%  { transform: scale(0.95) rotate(-4deg); }
     100% { transform: scale(1) rotate(0deg); }
@@ -603,8 +740,9 @@
     gap: 12px;
   }
   .big-btn:active {
-    transform: translateY(5px);
+    transform: translateY(5px) scale(0.97);
     box-shadow: 0 3px 0 var(--doman-red-dark), 0 4px 8px rgba(176,25,28,0.2);
+    transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
   }
   .big-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-ghost {
@@ -979,6 +1117,21 @@
   </div>
 </section>
 
+<!-- ====================  MATCH (post-session)  ==================== -->
+<section id="match" class="screen">
+  <div class="match-inner">
+    <div class="match-progress" id="matchProgress"></div>
+    <div class="match-prompt" id="matchPrompt">¿Qué palabra es?</div>
+    <div class="match-emoji" id="matchEmoji">🙂</div>
+    <div class="match-options" id="matchOptions"></div>
+    <div class="match-result" id="matchResult">
+      <div class="big-emoji" id="matchResultEmoji">✨</div>
+      <div class="score-line" id="matchResultScore">5 de 5</div>
+      <div class="sub">a la primera</div>
+    </div>
+  </div>
+</section>
+
 <!-- ====================  DONE  ==================== -->
 <section id="done" class="screen">
   <div class="done-inner">
@@ -1227,6 +1380,7 @@
     words:   document.getElementById("words"),
     game:    document.getElementById("game"),
     session: document.getElementById("session"),
+    match:   document.getElementById("match"),
     done:    document.getElementById("done")
   };
   const SCREENS_WITH_TABS = new Set(["home", "words", "game"]);
@@ -1590,8 +1744,126 @@
       setTimeout(() => { sfx.win(); haptic([80, 40, 80, 40, 120]); }, 450);
     }
 
-    doneMsg.textContent = "¡" + currentBatch.name + " completado!";
-    masteredBadge.style.display = justMastered ? "inline-block" : "none";
+    pendingDone = {
+      msg: "¡" + currentBatch.name + " completado!",
+      justMastered
+    };
+    // Después de los 5 pases, ejercicio de refuerzo "une palabra con imagen"
+    startMatchExercise();
+  }
+
+  // ============================================================
+  //  MATCH (ejercicio post-sesión)
+  // ============================================================
+  const matchEmoji   = document.getElementById("matchEmoji");
+  const matchOptions = document.getElementById("matchOptions");
+  const matchProgressEl = document.getElementById("matchProgress");
+  const matchPrompt  = document.getElementById("matchPrompt");
+  const matchResultEl    = document.getElementById("matchResult");
+  const matchResultScore = document.getElementById("matchResultScore");
+  const matchResultEmoji = document.getElementById("matchResultEmoji");
+
+  let pendingDone = null; // info de done guardada hasta terminar el match
+  const matchState = {
+    cards: [],
+    allCards: [],
+    round: 0,
+    firstTry: 0,
+    mistakesInRound: 0
+  };
+
+  function startMatchExercise() {
+    const cards = (currentBatch && currentBatch.cards) || [];
+    if (cards.length === 0) { finishMatch(); return; }
+    matchState.allCards = cards.slice();
+    matchState.cards = shuffle(cards.slice());
+    matchState.round = 0;
+    matchState.firstTry = 0;
+    matchState.mistakesInRound = 0;
+    matchResultEl.classList.remove("show");
+    matchEmoji.style.display = "";
+    matchOptions.style.display = "";
+    matchPrompt.style.display = "";
+    show("match");
+    renderMatchRound();
+  }
+
+  function renderMatchRound() {
+    const total = matchState.cards.length;
+    // Progress dots
+    matchProgressEl.innerHTML = "";
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement("div");
+      d.className = "md" +
+        (i < matchState.round ? " done" :
+         i === matchState.round ? " active" : "");
+      matchProgressEl.appendChild(d);
+    }
+    const target = matchState.cards[matchState.round];
+    matchEmoji.textContent = target.emoji || "📘";
+    // Re-trigger emoji entrance animation
+    matchEmoji.style.animation = "none";
+    void matchEmoji.offsetWidth;
+    matchEmoji.style.animation = "";
+    // Opciones: 1 correcta + 2 distractores aleatorios del mismo lote
+    const pool = matchState.allCards.filter(c => c.text !== target.text);
+    const distractors = shuffle(pool).slice(0, Math.min(2, pool.length));
+    const opts = shuffle([target, ...distractors]);
+    matchOptions.innerHTML = "";
+    for (const o of opts) {
+      const b = document.createElement("button");
+      b.className = "match-opt";
+      b.textContent = o.text;
+      b.addEventListener("click", () => handleMatchAnswer(b, o, target));
+      matchOptions.appendChild(b);
+    }
+    matchState.mistakesInRound = 0;
+  }
+
+  function handleMatchAnswer(btn, picked, target) {
+    const correct = picked.text === target.text;
+    if (correct) {
+      btn.classList.add("correct");
+      sfx.coin();
+      haptic(25);
+      speak(target.text);
+      // Deshabilitar más clicks durante la transición
+      matchOptions.querySelectorAll("button").forEach(b => b.disabled = true);
+      if (matchState.mistakesInRound === 0) matchState.firstTry++;
+      setTimeout(() => {
+        matchState.round++;
+        if (matchState.round >= matchState.cards.length) showMatchResult();
+        else renderMatchRound();
+      }, 650);
+    } else {
+      btn.classList.add("wrong");
+      sfx.fail();
+      haptic([80]);
+      matchState.mistakesInRound++;
+      setTimeout(() => btn.classList.remove("wrong"), 450);
+    }
+  }
+
+  function showMatchResult() {
+    const n = matchState.firstTry;
+    const total = matchState.cards.length;
+    matchResultScore.textContent = n + " de " + total;
+    matchResultEmoji.textContent =
+      n === total ? "🏆" :
+      n >= Math.ceil(total * 0.6) ? "⭐" : "👍";
+    matchOptions.style.display = "none";
+    matchEmoji.style.display = "none";
+    matchPrompt.style.display = "none";
+    matchResultEl.classList.add("show");
+    if (n === total) { sfx.win(); haptic([80,40,80,40,120]); }
+    setTimeout(finishMatch, 1600);
+  }
+
+  function finishMatch() {
+    if (!pendingDone) { show("home"); return; }
+    doneMsg.textContent = pendingDone.msg;
+    masteredBadge.style.display = pendingDone.justMastered ? "inline-block" : "none";
+    pendingDone = null;
     show("done");
     launchConfetti();
   }
