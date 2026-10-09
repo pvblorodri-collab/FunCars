@@ -242,6 +242,61 @@
   .wallet #walletCount,
   .wallet #walletCountW,
   .wallet #gameWallet { color: var(--ink); font-weight: 700; }
+
+  /* Chip "sonido" en la topbar: recordatorio permanente */
+  .sound-chip {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.06);
+  }
+  .sound-chip .sfx { font-size: 1.1rem; line-height: 1; }
+  .sound-chip:active { transform: translateY(1px); }
+
+  /* Overlay recordatorio sonido una vez antes de la primera sesión */
+  .sound-reminder {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 32px 24px;
+    background: rgba(30,30,42,0.9);
+    backdrop-filter: blur(8px);
+    text-align: center;
+  }
+  .sound-reminder.open { display: flex; animation: popupFade 0.25s var(--ease-out); }
+  .sound-reminder .big-sfx {
+    font-size: 6rem;
+    line-height: 1;
+    animation: popPop 0.4s var(--ease-pop);
+  }
+  .sound-reminder h2 {
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    max-width: 360px;
+  }
+  .sound-reminder .lead {
+    color: rgba(255,255,255,0.75);
+    font-size: 1rem;
+    max-width: 320px;
+    line-height: 1.4;
+  }
   .wallet.pulse { transform: scale(1.18); }
   .wallet .coin { font-size: 1.2rem; transition: transform 0.5s var(--ease-pop); }
   .wallet.pulse .coin { transform: rotate(360deg) scale(1.2); }
@@ -1208,7 +1263,9 @@
 <!-- ====================  HOME  ==================== -->
 <section id="home" class="screen active">
   <div class="topbar">
-    <div></div>
+    <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
+      <span class="sfx">🔊</span><span>Sonido</span>
+    </button>
     <div class="wallet"><span id="walletCount">0</span> <span class="coin">🪙</span></div>
   </div>
 
@@ -1270,7 +1327,9 @@
 <!-- ====================  WORDS (MIS PALABRAS)  ==================== -->
 <section id="words" class="screen">
   <div class="topbar">
-    <div class="brand"><span class="fun">Fun</span><span class="cars">Cards</span></div>
+    <button class="sound-chip" data-sound-chip aria-label="Recordatorio de sonido">
+      <span class="sfx">🔊</span><span>Sonido</span>
+    </button>
     <div class="wallet"><span id="walletCountW">0</span> <span class="coin">🪙</span></div>
   </div>
   <div class="words-header">
@@ -1359,6 +1418,19 @@
     </div>
   </div>
 </section>
+
+<!-- ====================  SOUND REMINDER  ==================== -->
+<div id="soundReminder" class="sound-reminder" role="dialog" aria-hidden="true">
+  <div class="big-sfx">🔊</div>
+  <h2>Sube el volumen</h2>
+  <div class="lead">
+    Cada palabra se pronuncia en voz alta.<br>
+    Comprueba que el móvil no está en silencio.
+  </div>
+  <button class="big-btn" id="btnSoundOk">
+    <span>✓</span><span>Entendido</span>
+  </button>
+</div>
 
 <!-- ====================  WORD POPUP  ==================== -->
 <div id="wordPopup" class="word-popup" role="dialog" aria-hidden="true">
@@ -1571,6 +1643,9 @@
   const wordPopup     = document.getElementById("wordPopup");
   const popEmoji      = document.getElementById("popEmoji");
   const popWord       = document.getElementById("popWord");
+  const soundReminder = document.getElementById("soundReminder");
+  const btnSoundOk    = document.getElementById("btnSoundOk");
+  const SOUND_REMINDED_KEY = "funcars.sound_reminded.v1";
   const wordsCount    = document.getElementById("wordsCount");
   const wordsBody     = document.getElementById("wordsBody");
   const cardText      = document.getElementById("cardText");
@@ -1891,13 +1966,41 @@
   }
 
   let running = false;
+  // Recordatorio de volumen una vez
+  function hasSoundReminded() {
+    try { return localStorage.getItem(SOUND_REMINDED_KEY) === "1"; } catch(e) { return false; }
+  }
+  function markSoundReminded() {
+    try { localStorage.setItem(SOUND_REMINDED_KEY, "1"); } catch(e) {}
+  }
+  function openSoundReminder(onDone) {
+    soundReminder.classList.add("open");
+    soundReminder.setAttribute("aria-hidden", "false");
+    const handler = () => {
+      soundReminder.classList.remove("open");
+      soundReminder.setAttribute("aria-hidden", "true");
+      btnSoundOk.removeEventListener("click", handler);
+      if (onDone) onDone();
+    };
+    btnSoundOk.addEventListener("click", handler);
+  }
+  // Click en el chip de sonido abre el recordatorio sin gating
+  document.querySelectorAll("[data-sound-chip]").forEach(el => {
+    el.addEventListener("click", () => { sfx.tap(); openSoundReminder(); });
+  });
+
   async function startSession(batch) {
     if (running) return;
     currentBatch = batch;
     sessionTitle.textContent = batch.name;
     await warmUpVoices();
     try { speechSynthesis.speak(new SpeechSynthesisUtterance(" ")); } catch(e){}
-    runSession();
+    if (!hasSoundReminded()) {
+      markSoundReminded();
+      openSoundReminder(() => runSession());
+    } else {
+      runSession();
+    }
   }
 
   function setCardMode(mode) {
