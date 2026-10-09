@@ -2551,6 +2551,7 @@
     { id: "parking",  name: "Parking",   emoji: "🅿️",  desc: "Recuerda dónde iban", levels: 3 },
     { id: "naval",    name: "Hundir",    emoji: "🚢", desc: "Hunde la flota",      levels: 3 },
     { id: "invasores",name: "Invasores", emoji: "👾", desc: "Dispara a los marcianos", levels: 3 },
+    { id: "simon",    name: "Simón",     emoji: "🔆", desc: "Repite la secuencia", levels: 3 },
     { id: "sopa",     name: "Sopa",      emoji: "🔤", desc: "Busca las palabras" }
   ];
   const GAMES = {}; // id -> { start, stop, onPointerDown }
@@ -2980,12 +2981,15 @@
   // ============================================================
   (() => {
     const DIFF = {
-      easy: { grid: 5, ships: [2, 2] },
-      med:  { grid: 6, ships: [2, 2, 3] },
-      hard: { grid: 7, ships: [2, 2, 3, 3] }
+      easy: { grid: 5, ships: [2, 2],       showMs: 3000 },
+      med:  { grid: 6, ships: [2, 2, 3],    showMs: 2500 },
+      hard: { grid: 7, ships: [2, 2, 3, 3], showMs: 2000 }
     };
     const s = {
       running: false,
+      phase: "show",       // 'show' | 'attack'
+      tShow: 0, showMs: 3000,
+      rafId: null,
       grid: [],
       size: 5,
       ships: [],
@@ -3022,36 +3026,52 @@
     function start(opts) {
       const d = DIFF[(opts && opts.difficulty) || "easy"];
       s.size = d.grid;
+      s.showMs = d.showMs;
       s.grid = Array.from({length: s.size}, () => Array(s.size).fill(null));
       s.ships = [];
       for (const sz of d.ships) tryPlaceShip(sz);
       s.hits = 0; s.misses = 0;
       s.totalShipCells = d.ships.reduce((a, b) => a + b, 0);
+      s.phase = "show";
+      s.tShow = performance.now();
       s.running = true;
       layout();
       gameScoreEl.textContent = s.hits + "/" + s.totalShipCells;
-      draw();
+      s.rafId = requestAnimationFrame(loop);
     }
-    function stop() { s.running = false; }
+    function stop() {
+      s.running = false;
+      if (s.rafId) { cancelAnimationFrame(s.rafId); s.rafId = null; }
+    }
+    function loop(now) {
+      if (!s.running) return;
+      if (s.phase === "show" && now - s.tShow >= s.showMs) {
+        s.phase = "attack";
+      }
+      draw();
+      s.rafId = requestAnimationFrame(loop);
+    }
     function draw() {
       const W = canvasW, H = canvasH;
       ctx.fillStyle = "#102A3A"; ctx.fillRect(0, 0, W, H);
+      // Prompt
       ctx.font = "600 20px Fredoka, sans-serif";
       ctx.fillStyle = "#FFF"; ctx.textAlign = "center"; ctx.textBaseline = "top";
-      ctx.fillText("Hundir la flota", W/2, 56);
+      ctx.fillText(s.phase === "show" ? "¡Mira dónde están los barcos!" : "Hunde los barcos", W/2, 56);
       const cs = s.cellSize;
       for (let r = 0; r < s.size; r++) {
         for (let c = 0; c < s.size; c++) {
           const x = s.gridX + c * cs;
           const y = s.gridY + r * cs;
           const cell = s.grid[r][c];
-          // Agua
-          ctx.fillStyle = cell === 'hit'  ? '#E53935'
-                        : cell === 'miss' ? '#90CAF9'
-                        : '#1565C0';
+          // Fondo celda
+          let bg = '#1565C0';
+          if (cell === 'hit')      bg = '#E53935';
+          else if (cell === 'miss') bg = '#90CAF9';
+          ctx.fillStyle = bg;
           roundRect(x + 2, y + 2, cs - 4, cs - 4, 6); ctx.fill();
-          // Olitas (deco)
-          if (!cell) {
+          // Olitas en celdas de agua intactas
+          if (!cell || cell === 'ship') {
             ctx.strokeStyle = 'rgba(255,255,255,0.14)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -3059,7 +3079,15 @@
             ctx.quadraticCurveTo(x + cs/2, y + cs/2 - 4, x + cs - 8, y + cs/2);
             ctx.stroke();
           }
-          // Marcas
+          // Mostrar barco visible en fase 'show'
+          if (s.phase === "show" && cell === 'ship') {
+            ctx.fillStyle = "#607D8B";
+            roundRect(x + 8, y + 10, cs - 16, cs - 20, 4); ctx.fill();
+            ctx.fillStyle = "#FFEB3B";
+            ctx.beginPath();
+            ctx.arc(x + cs/2, y + cs/2, 3, 0, Math.PI*2); ctx.fill();
+          }
+          // Marcas de ataque
           if (cell === 'hit') {
             ctx.strokeStyle = '#FFF'; ctx.lineWidth = 3;
             ctx.beginPath();
@@ -3067,7 +3095,7 @@
             ctx.moveTo(x + cs - 10, y + 10); ctx.lineTo(x + 10, y + cs - 10);
             ctx.stroke();
           } else if (cell === 'miss') {
-            ctx.fillStyle = '#FFF';
+            ctx.fillStyle = '#1565C0';
             ctx.beginPath();
             ctx.arc(x + cs/2, y + cs/2, 4, 0, Math.PI*2); ctx.fill();
           }
@@ -3078,10 +3106,15 @@
       ctx.font = "600 15px Fredoka, sans-serif";
       ctx.textAlign = "center"; ctx.textBaseline = "top";
       ctx.fillStyle = '#F5F5DC';
-      ctx.fillText("Barcos: " + s.ships.length + " · impactos " + s.hits + "/" + s.totalShipCells + " · fallos " + s.misses, W/2, bottomY);
+      if (s.phase === "show") {
+        ctx.fillText("Hay " + s.ships.length + " barcos · " + s.totalShipCells + " casillas", W/2, bottomY);
+      } else {
+        ctx.fillText("impactos " + s.hits + "/" + s.totalShipCells + " · fallos " + s.misses, W/2, bottomY);
+      }
     }
     function onPointerDown(x, y) {
       if (!s.running) return;
+      if (s.phase === "show") return; // esperar a fase de ataque
       const col = Math.floor((x - s.gridX) / s.cellSize);
       const row = Math.floor((y - s.gridY) / s.cellSize);
       if (row < 0 || row >= s.size || col < 0 || col >= s.size) return;
@@ -3289,6 +3322,164 @@
       haptic(10);
     }
     GAMES.invasores = { start, stop, onPointerDown, onKeyDown() {}, onResize: layout };
+  })();
+
+  // ============================================================
+  //  GAME: Simón (secuencia de luces y sonidos) — 3 niveles
+  // ============================================================
+  (() => {
+    const DIFF = {
+      easy: { seqStart: 2, maxSeq: 6,  tLight: 650 },
+      med:  { seqStart: 3, maxSeq: 10, tLight: 500 },
+      hard: { seqStart: 4, maxSeq: 14, tLight: 380 }
+    };
+    const PADS = [
+      { color: "#E53935", lit: "#FF8A80", freq: 330, label: "rojo"     },
+      { color: "#66BB6A", lit: "#B9F6CA", freq: 440, label: "verde"    },
+      { color: "#4FC3F7", lit: "#B3E5FC", freq: 554, label: "azul"     },
+      { color: "#FFC107", lit: "#FFF59D", freq: 659, label: "amarillo" }
+    ];
+    const s = {
+      running: false, rafId: null,
+      sequence: [],
+      inputIdx: 0,
+      phase: "intro",     // 'intro' | 'playing' | 'user' | 'over'
+      currentLitPad: -1,
+      litUntil: 0,
+      padRects: [],
+      gameOver: false,
+      seqStart: 2, maxSeq: 6, tLight: 650,
+      roundInProgress: false
+    };
+    function layout() {
+      const size = Math.min(canvasW, canvasH - 220);
+      const padSize = Math.floor((size - 24) / 2);
+      const totalW = padSize * 2 + 12;
+      const startX = (canvasW - totalW) / 2;
+      const startY = 100;
+      s.padRects = [
+        { x: startX,           y: startY,           w: padSize, h: padSize }, // rojo (top-left)
+        { x: startX + padSize + 12, y: startY,      w: padSize, h: padSize }, // verde (top-right)
+        { x: startX,           y: startY + padSize + 12, w: padSize, h: padSize }, // azul (bot-left)
+        { x: startX + padSize + 12, y: startY + padSize + 12, w: padSize, h: padSize } // amarillo (bot-right)
+      ];
+    }
+    function playPad(i) {
+      s.currentLitPad = i;
+      s.litUntil = performance.now() + s.tLight;
+      try { tone(PADS[i].freq, s.tLight / 1000 * 0.9, "triangle", 0.1); } catch(e){}
+      haptic(10);
+    }
+    async function playSequence() {
+      s.phase = "playing";
+      for (const i of s.sequence) {
+        playPad(i);
+        await new Promise(r => setTimeout(r, s.tLight + 100));
+        s.currentLitPad = -1;
+        draw();
+        await new Promise(r => setTimeout(r, 120));
+        if (!s.running) return;
+      }
+      s.phase = "user";
+      s.inputIdx = 0;
+      draw();
+    }
+    function start(opts) {
+      const d = DIFF[(opts && opts.difficulty) || "easy"];
+      s.seqStart = d.seqStart;
+      s.maxSeq = d.maxSeq;
+      s.tLight = d.tLight;
+      s.sequence = [];
+      s.inputIdx = 0;
+      s.currentLitPad = -1;
+      s.gameOver = false;
+      s.running = true;
+      layout();
+      // Generar secuencia inicial
+      for (let i = 0; i < s.seqStart; i++) {
+        s.sequence.push(Math.floor(Math.random() * 4));
+      }
+      gameScoreEl.textContent = "0 / " + s.maxSeq;
+      s.rafId = requestAnimationFrame(loop);
+      setTimeout(() => playSequence(), 400);
+    }
+    function stop() {
+      s.running = false;
+      if (s.rafId) { cancelAnimationFrame(s.rafId); s.rafId = null; }
+    }
+    function loop() {
+      if (!s.running) return;
+      if (s.currentLitPad >= 0 && performance.now() > s.litUntil) {
+        s.currentLitPad = -1;
+      }
+      draw();
+      s.rafId = requestAnimationFrame(loop);
+    }
+    function draw() {
+      const W = canvasW, H = canvasH;
+      ctx.fillStyle = "#1E1E2A"; ctx.fillRect(0, 0, W, H);
+      ctx.font = "600 20px Fredoka, sans-serif";
+      ctx.fillStyle = "#FFF"; ctx.textAlign = "center"; ctx.textBaseline = "top";
+      let prompt = "Simón";
+      if (s.phase === "playing") prompt = "¡Mira la secuencia!";
+      else if (s.phase === "user") prompt = "Ahora tú";
+      ctx.fillText(prompt, W/2, 56);
+      for (let i = 0; i < 4; i++) {
+        const r = s.padRects[i];
+        const pad = PADS[i];
+        ctx.fillStyle = (i === s.currentLitPad) ? pad.lit : pad.color;
+        roundRect(r.x, r.y, r.w, r.h, 18); ctx.fill();
+        if (i === s.currentLitPad) {
+          ctx.strokeStyle = "#FFF"; ctx.lineWidth = 4;
+          roundRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4, 16); ctx.stroke();
+        }
+      }
+      const bottomY = s.padRects[2].y + s.padRects[2].h + 24;
+      ctx.font = "600 15px Fredoka, sans-serif";
+      ctx.fillStyle = "#F5F5DC";
+      ctx.fillText("Secuencia: " + s.sequence.length + " / " + s.maxSeq, W/2, bottomY);
+    }
+    function padAt(x, y) {
+      for (let i = 0; i < 4; i++) {
+        const r = s.padRects[i];
+        if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return i;
+      }
+      return -1;
+    }
+    function onPointerDown(x, y) {
+      if (!s.running || s.phase !== "user") return;
+      const i = padAt(x, y);
+      if (i < 0) return;
+      playPad(i);
+      const expected = s.sequence[s.inputIdx];
+      if (i === expected) {
+        s.inputIdx++;
+        if (s.inputIdx >= s.sequence.length) {
+          // Secuencia completada
+          gameScoreEl.textContent = s.sequence.length + " / " + s.maxSeq;
+          if (s.sequence.length >= s.maxSeq) {
+            // Victoria
+            s.phase = "over"; s.gameOver = true;
+            setTimeout(() => finishGame({
+              score: s.sequence.length, unit: "aciertos", won: true
+            }), 500);
+            return;
+          }
+          // Siguiente ronda: añadir uno
+          s.sequence.push(Math.floor(Math.random() * 4));
+          s.phase = "playing";
+          setTimeout(() => playSequence(), 700);
+        }
+      } else {
+        // Fallo
+        s.phase = "over"; s.gameOver = true;
+        sfx.fail(); haptic([200]);
+        setTimeout(() => finishGame({
+          score: s.sequence.length - 1, unit: "aciertos", won: false
+        }), 500);
+      }
+    }
+    GAMES.simon = { start, stop, onPointerDown, onKeyDown() {}, onResize: layout };
   })();
 
   // ============================================================
