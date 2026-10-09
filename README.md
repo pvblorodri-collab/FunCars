@@ -1,28 +1,33 @@
-# FunCars
+# FunCards
 
-Enseñar a leer a niños pequeños con el método Doman (palabra global, flashcards rápidas, 5 pases × 5 cards, 75 exposiciones). Gamificación mínima: cada sesión completada = 3 monedas = 3 vidas en el mini-juego.
+Aprender a leer con el método Doman (palabra global, flashcards rápidas, 5 pases × 5 cards, 75 exposiciones por palabra) + mini-juegos para gastar monedas ganadas al leer.
 
-## Estado
+**En vivo:** https://pvblorodri-collab.github.io/FunCars/
 
-**Prototipo validación — Lote 1**. Un solo HTML, cero dependencias, Web Speech API para el sonido. Objetivo: probar la mecánica con un niño real antes de invertir en stack completo.
+## Stack
 
-## Probar
+- 1 HTML + 1 JSON + SVGs + service worker. Cero dependencias de build.
+- Web Speech API para la voz (es-ES, sin archivos de audio).
+- Web Audio API para SFX.
+- PWA installable (manifest + SW cache-first).
+
+## Probar en local
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8080
 ```
 
-Abre `http://localhost:8000` en Chrome, Safari o Firefox (móvil o escritorio). Pulsa **Empezar sesión** — el click también desbloquea el audio en iOS. Verás 5 pases × 5 cards del Lote 1 (`sol · agua · casa · pan · feliz`), ~30 segundos.
+Abre `http://localhost:8080`. En móvil usa la IP del PC.
 
 ## Contenido
 
-Los 10 lotes iniciales (50 palabras) viven en [`content/batches.json`](content/batches.json). El prototipo solo usa el Lote 1 hardcodeado por simplicidad.
+Los 10 lotes iniciales (50 palabras) viven en [`content/batches.json`](content/batches.json).
 
-## Siguiente paso
+## Mecánica
 
-Si la mecánica funciona con un niño:
-
-1. Las 2 rondas (texto + imagen) con imágenes libres (Openclipart, Pixabay).
-2. Persistencia local de sesiones y monedas.
-3. Mini-juego que consume monedas.
-4. Stack completo (Next.js + Supabase) solo tras validar.
+- **1 sesión** = 5 cards × 5 pases alternados (texto · imagen · texto · imagen · texto).
+- **1 sesión completada** = +3 monedas. **1 moneda** = 1 vida en el juego.
+- **Cadencia**: cada lote tiene cooldown de 8h entre sesiones.
+- **Mastery**: 15 sesiones por lote = 75 exposiciones por palabra, lote dominado.
+- Máximo **2 lotes activos** simultáneamente.
+- 3 mini-juegos: Runner (esquivar), Parking (memoria), Carrera (ritmo).

@@ -1,7 +1,7 @@
 {
-  "name": "FunCars",
-  "short_name": "FunCars",
-  "description": "Aprende a leer con el método Doman y mini-juegos de coches.",
+  "name": "FunCards",
+  "short_name": "FunCards",
+  "description": "Aprende a leer con el método Doman y mini-juegos.",
   "lang": "es-ES",
   "start_url": "./",
   "scope": "./",
